@@ -1,0 +1,10 @@
+{
+  "name": "movies",
+  "version": "dev. 25w41",
+  "description": "Your personal log for every movie you’ve watched.",
+  "scripts": {
+    "types": "cd client && bun tsc && cd ../server && bun tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
