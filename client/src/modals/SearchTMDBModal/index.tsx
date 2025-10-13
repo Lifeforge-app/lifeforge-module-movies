@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import type { InferOutput } from 'shared'
 
-import TMDBLogo from './components/TMDBLogo.svg'
+import TMDBLogo from './components/TMDBLogo'
 import TMDBResultsList from './components/TMDBResultsList'
 
 export type TMDBSearchResults = InferOutput<typeof forgeAPI.movies.tmdb.search>
@@ -63,7 +63,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
               rel="noreferrer"
               target="_blank"
             >
-              <img alt="TMDB" className="ml-2 inline h-4" src={TMDBLogo} />
+              <TMDBLogo className="ml-2 inline h-4" />
             </a>
           </p>
         }
@@ -117,7 +117,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
         ) : (
           <div className="h-96">
             <EmptyStateScreen
-              icon={<img alt="TMDB" className="h-24" src={TMDBLogo} />}
+              icon={<TMDBLogo className="h-24" />}
               name="tmdb"
               namespace="apps.movies"
             />
