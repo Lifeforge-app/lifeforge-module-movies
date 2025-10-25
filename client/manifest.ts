@@ -8,5 +8,5 @@ export default {
     movies: lazy(() => import('@'))
   },
   requiredAPIKeys: ['tmdb'],
-  category: '02.Lifestyle'
+  category: 'Lifestyle'
 } satisfies ModuleConfig
