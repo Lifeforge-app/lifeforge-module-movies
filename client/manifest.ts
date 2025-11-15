@@ -5,7 +5,7 @@ export default {
   name: 'Movies',
   icon: 'tabler:movie',
   routes: {
-    movies: lazy(() => import('@'))
+    '/': lazy(() => import('@'))
   },
   requiredAPIKeys: ['tmdb'],
   category: 'Lifestyle'
