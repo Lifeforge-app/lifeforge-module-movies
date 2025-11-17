@@ -22,7 +22,12 @@ export interface TMDBSearchResult {
 
 const search = forgeController
   .query()
-  .description('Search movies using TMDB API')
+  .description({
+    en: 'Search movies using TMDB API',
+    ms: 'Cari filem menggunakan API TMDB',
+    'zh-CN': '使用 TMDB API 搜索电影',
+    'zh-TW': '使用 TMDB API 搜尋電影'
+  })
   .input({
     query: z.object({
       q: z.string().min(1, 'Query must not be empty'),

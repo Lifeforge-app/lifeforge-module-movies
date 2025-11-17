@@ -5,7 +5,12 @@ import z from 'zod'
 
 const update = forgeController
   .mutation()
-  .description('Update ticket information for a movie entry')
+  .description({
+    en: 'Update ticket information for a movie entry',
+    ms: 'Kemas kini maklumat tiket untuk catatan filem',
+    'zh-CN': '更新电影条目的票务信息',
+    'zh-TW': '更新電影條目的票務資訊'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -43,7 +48,12 @@ const update = forgeController
 
 const clear = forgeController
   .mutation()
-  .description('Clear ticket information for a movie entry')
+  .description({
+    en: 'Clear ticket information for a movie entry',
+    ms: 'Kosongkan maklumat tiket untuk catatan filem',
+    'zh-CN': '清除电影条目的票务信息',
+    'zh-TW': '清除電影條目的票務資訊'
+  })
   .input({
     query: z.object({
       id: z.string()

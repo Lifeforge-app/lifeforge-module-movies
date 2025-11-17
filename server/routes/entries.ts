@@ -4,7 +4,12 @@ import z from 'zod'
 
 const list = forgeController
   .query()
-  .description('Get all movie entries')
+  .description({
+    en: 'Get all movie entries',
+    ms: 'Dapatkan semua catatan filem',
+    'zh-CN': '获取所有电影条目',
+    'zh-TW': '獲取所有電影條目'
+  })
   .input({
     query: z.object({
       watched: z
@@ -62,7 +67,12 @@ const list = forgeController
 
 const create = forgeController
   .mutation()
-  .description('Create a movie entry from TMDB')
+  .description({
+    en: 'Create a movie entry from TMDB',
+    ms: 'Cipta catatan filem daripada TMDB',
+    'zh-CN': '从 TMDB 创建电影条目',
+    'zh-TW': '從 TMDB 創建電影條目'
+  })
   .input({
     query: z.object({
       id: z.string().transform(val => parseInt(val, 10))
@@ -123,7 +133,12 @@ const create = forgeController
 
 const update = forgeController
   .mutation()
-  .description('Update entries with the latest movie data from TMDB')
+  .description({
+    en: 'Update movie entry with the latest data from TMDB',
+    ms: 'Kemas kini catatan filem dengan data terkini daripada TMDB',
+    'zh-CN': '使用 TMDB 的最新数据更新电影条目',
+    'zh-TW': '使用 TMDB 的最新資料更新電影條目'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -179,7 +194,12 @@ const update = forgeController
 
 const remove = forgeController
   .mutation()
-  .description('Delete a movie entry')
+  .description({
+    en: 'Delete a movie entry',
+    ms: 'Padam catatan filem',
+    'zh-CN': '删除电影条目',
+    'zh-TW': '刪除電影條目'
+  })
   .input({
     query: z.object({
       id: z.string()
@@ -195,7 +215,12 @@ const remove = forgeController
 
 const toggleWatchStatus = forgeController
   .mutation()
-  .description('Toggle watch status of a movie entry')
+  .description({
+    en: 'Toggle watch status of a movie entry',
+    ms: 'Togol status tontonan catatan filem',
+    'zh-CN': '切换电影条目的观看状态',
+    'zh-TW': '切換電影條目的觀看狀態'
+  })
   .input({
     query: z.object({
       id: z.string()
