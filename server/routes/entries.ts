@@ -55,8 +55,8 @@ const list = forgeController
 
         if (a.theatre_showtime && b.theatre_showtime) {
           return (
-            new Date(b.theatre_showtime).getTime() -
-            new Date(a.theatre_showtime).getTime()
+            new Date(a.theatre_showtime).getTime() -
+            new Date(b.theatre_showtime).getTime() // Earlier showtimes come first
           )
         }
 
