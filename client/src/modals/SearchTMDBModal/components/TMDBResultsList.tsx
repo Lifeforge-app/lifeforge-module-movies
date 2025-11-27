@@ -11,7 +11,7 @@ function TMDBResultsList({
 }: {
   results: TMDBSearchResults
   page: number
-  setPage: (page: number) => void
+  setPage: React.Dispatch<React.SetStateAction<number>>
   onAddToLibrary: () => Promise<void>
 }) {
   if (results === null) {
