@@ -10,7 +10,7 @@ import {
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
-  ItemWrapper
+  Card
 } from 'lifeforge-ui'
 import { useModalStore } from 'lifeforge-ui'
 import { useCallback } from 'react'
@@ -116,7 +116,7 @@ function MovieItem({
   }, [data])
 
   return (
-    <ItemWrapper
+    <Card
       as="li"
       className={clsx(
         'flex items-center gap-6',
@@ -278,7 +278,7 @@ function MovieItem({
           onClick={handleDeleteTicket}
         />
       </ContextMenu>
-    </ItemWrapper>
+    </Card>
   )
 }
 

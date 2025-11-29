@@ -77,8 +77,8 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
           className="component-bg-lighter-with-hover"
           namespace="apps.movies"
           searchTarget="movie"
-          setValue={setSearchQuery}
           value={searchQuery}
+          onChange={setSearchQuery}
           onKeyUp={e => {
             if (e.key === 'Enter') {
               if (searchQuery.trim() !== '') {
@@ -118,8 +118,10 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
           <div className="h-96">
             <EmptyStateScreen
               icon={<TMDBLogo className="h-24" />}
-              name="tmdb"
-              namespace="apps.movies"
+              message={{
+                id: 'tmdb',
+                namespace: 'apps.movies'
+              }}
             />
           </div>
         )}

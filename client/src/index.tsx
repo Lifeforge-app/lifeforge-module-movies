@@ -91,17 +91,17 @@ function Movies() {
         <SearchInput
           namespace="apps.movies"
           searchTarget="movie"
-          setValue={setSearchQuery}
           value={searchQuery}
+          onChange={setSearchQuery}
         />
         <ViewModeSelector
           className="hidden md:flex"
+          currentMode={viewMode}
           options={[
             { icon: 'uil:apps', value: 'grid' },
             { icon: 'tabler:list', value: 'list' }
           ]}
-          setViewMode={setViewMode}
-          viewMode={viewMode}
+          onModeChange={setViewMode}
         />
       </div>
       <WithQuery query={entriesQuery}>
@@ -111,7 +111,7 @@ function Movies() {
           return (
             <div className="flex flex-1 flex-col space-y-3">
               <Tabs
-                active={currentTab}
+                currentTab={currentTab}
                 enabled={['unwatched', 'watched']}
                 items={[
                   {
@@ -133,7 +133,7 @@ function Movies() {
                         : data.total - data.entries.length
                   }
                 ]}
-                onNavClick={setCurrentTab}
+                onTabChange={setCurrentTab}
               />
               {data.entries.length === 0 ? (
                 <EmptyStateScreen
@@ -144,8 +144,10 @@ function Movies() {
                     children: 'new'
                   }}
                   icon="tabler:movie-off"
-                  name="library"
-                  namespace="apps.movies"
+                  message={{
+                    id: 'library',
+                    namespace: 'apps.movies'
+                  }}
                 />
               ) : (
                 <Scrollbar>

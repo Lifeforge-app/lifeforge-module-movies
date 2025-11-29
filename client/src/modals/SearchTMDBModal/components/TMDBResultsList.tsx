@@ -23,8 +23,10 @@ function TMDBResultsList({
       <div className="mt-6 h-96">
         <EmptyStateScreen
           icon="tabler:search-off"
-          name="search"
-          namespace="apps.movies"
+          message={{
+            id: 'search',
+            namespace: 'apps.movies'
+          }}
         />
       </div>
     )
@@ -34,7 +36,7 @@ function TMDBResultsList({
     <>
       <Pagination
         className="mt-6 mb-4"
-        currentPage={page}
+        page={page}
         totalPages={results.total_pages}
         onPageChange={setPage}
       />
@@ -50,7 +52,7 @@ function TMDBResultsList({
       </div>
       <Pagination
         className="mt-4"
-        currentPage={page}
+        page={page}
         totalPages={results.total_pages}
         onPageChange={setPage}
       />
