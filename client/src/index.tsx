@@ -1,6 +1,5 @@
 import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
-import { useDebounce } from '@uidotdev/usehooks'
 import {
   Button,
   EmptyStateScreen,
@@ -37,8 +36,6 @@ function Movies() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const [searchQuery, setSearchQuery] = useState('')
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
   const [currentTab, setCurrentTab] = useState<'unwatched' | 'watched'>(
     'unwatched'
@@ -89,6 +86,7 @@ function Movies() {
       />
       <div className="flex items-center gap-2">
         <SearchInput
+          debounceMs={300}
           namespace="apps.movies"
           searchTarget="movie"
           value={searchQuery}
@@ -155,7 +153,7 @@ function Movies() {
                     data={data.entries.filter(entry => {
                       const matchesSearch = entry.title
                         .toLowerCase()
-                        .includes(debouncedSearchQuery.toLowerCase())
+                        .includes(searchQuery.toLowerCase())
 
                       const matchesTab =
                         currentTab === 'unwatched'
