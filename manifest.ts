@@ -7,6 +7,8 @@ export default {
   routes: {
     '/': lazy(() => import('@'))
   },
-  requiredAPIKeys: ['tmdb'],
+  apiAccess: [
+    { key: 'tmdb', required: true, usage: 'Fetch movie data from TMDB' }
+  ],
   category: 'Lifestyle'
 } satisfies ModuleConfig

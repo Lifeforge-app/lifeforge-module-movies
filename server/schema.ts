@@ -23,7 +23,6 @@ const moviesSchemas = {
       is_watched: z.boolean()
     }),
     raw: {
-      id: 'pbc_123468663',
       listRule: '@request.auth.id != ""',
       viewRule: '@request.auth.id != ""',
       createRule: '@request.auth.id != ""',
@@ -35,7 +34,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '[a-z0-9]{15}',
           hidden: false,
-          id: 'text3208210256',
           max: 15,
           min: 15,
           name: 'id',
@@ -48,7 +46,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'number1438434789',
           max: null,
           min: null,
           name: 'tmdb_id',
@@ -61,7 +58,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text724990059',
           max: 0,
           min: 0,
           name: 'title',
@@ -75,7 +71,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3834026137',
           max: 0,
           min: 0,
           name: 'original_title',
@@ -89,7 +84,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text762383602',
           max: 0,
           min: 0,
           name: 'poster',
@@ -102,7 +96,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'json2834031894',
           maxSize: 0,
           name: 'genres',
           presentable: false,
@@ -112,7 +105,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'number2254405824',
           max: null,
           min: null,
           name: 'duration',
@@ -125,7 +117,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3888370107',
           max: 0,
           min: 0,
           name: 'overview',
@@ -138,7 +129,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'json3773345755',
           maxSize: 0,
           name: 'countries',
           presentable: false,
@@ -149,7 +139,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3571151285',
           max: 0,
           min: 0,
           name: 'language',
@@ -162,7 +151,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'date4215628054',
           max: '',
           min: '',
           name: 'release_date',
@@ -173,7 +161,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'date1180390397',
           max: '',
           min: '',
           name: 'watch_date',
@@ -185,7 +172,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text3973215647',
           max: 0,
           min: 0,
           name: 'ticket_number',
@@ -199,7 +185,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text1742151851',
           max: 0,
           min: 0,
           name: 'theatre_seat',
@@ -212,7 +197,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'date3428949474',
           max: '',
           min: '',
           name: 'theatre_showtime',
@@ -224,7 +208,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text2447088056',
           max: 0,
           min: 0,
           name: 'theatre_location',
@@ -237,7 +220,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'geoPoint4084498627',
           name: 'theatre_location_coords',
           presentable: false,
           required: false,
@@ -247,7 +229,6 @@ const moviesSchemas = {
         {
           autogeneratePattern: '',
           hidden: false,
-          id: 'text2138584574',
           max: 0,
           min: 0,
           name: 'theatre_number',
@@ -260,7 +241,6 @@ const moviesSchemas = {
         },
         {
           hidden: false,
-          id: 'bool1180390397',
           name: 'is_watched',
           presentable: false,
           required: false,
