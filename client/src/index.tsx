@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useQuery } from '@tanstack/react-query'
 import {
   Button,
@@ -17,8 +16,11 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'shared'
 import type { InferOutput } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 import MovieGrid from './components/MovieGrid'
 import MovieList from './components/MovieList'
+import './index.css'
 import SearchTMDBModal from './modals/SearchTMDBModal'
 import ShowTicketModal from './modals/ShowTicketModal'
 
@@ -27,7 +29,7 @@ export type MovieEntry = InferOutput<
 >['entries'][number]
 
 function Movies() {
-  const open = useModalStore(state => state.open)
+  const { open } = useModalStore()
 
   const { t } = useTranslation('apps.movies')
 

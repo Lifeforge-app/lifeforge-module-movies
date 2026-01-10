@@ -1,9 +1,10 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ConfirmationModal, FormModal, defineForm } from 'lifeforge-ui'
 import { useModalStore } from 'lifeforge-ui'
 import { toast } from 'react-toastify'
 import type { InferInput } from 'shared'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import type { MovieEntry } from '..'
 
@@ -19,7 +20,7 @@ function ModifyTicketModal({
 }) {
   const queryClient = useQueryClient()
 
-  const open = useModalStore(state => state.open)
+  const { open } = useModalStore()
 
   const modifyTicketMutation = useMutation(
     forgeAPI.movies.ticket.update

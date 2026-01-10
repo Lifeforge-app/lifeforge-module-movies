@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
@@ -7,10 +6,10 @@ import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import {
   Button,
+  Card,
   ConfirmationModal,
   ContextMenu,
-  ContextMenuItem,
-  Card
+  ContextMenuItem
 } from 'lifeforge-ui'
 import { useModalStore } from 'lifeforge-ui'
 import { useCallback } from 'react'
@@ -18,6 +17,8 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import type { InferOutput } from 'shared'
 import { usePersonalization, usePromiseLoading } from 'shared'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import ModifyTicketModal from '../modals/ModifyTicketModal'
 import ShowTicketModal from '../modals/ShowTicketModal'
@@ -38,7 +39,7 @@ function MovieItem({
 
   const { language } = usePersonalization()
 
-  const open = useModalStore(state => state.open)
+  const { open } = useModalStore()
 
   const toggleWatchedMutation = useMutation(
     forgeAPI.movies.entries.toggleWatchStatus
