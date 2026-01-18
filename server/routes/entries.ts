@@ -1,15 +1,10 @@
-import { getAPIKey } from '@functions/database'
-import { forgeController, forgeRouter } from '@functions/routes'
 import z from 'zod'
 
-const list = forgeController
+import forge from '../forge'
+
+export const list = forge
   .query()
-  .description({
-    en: 'Get all movie entries',
-    ms: 'Dapatkan semua catatan filem',
-    'zh-CN': '获取所有电影条目',
-    'zh-TW': '獲取所有電影條目'
-  })
+  .description('Get all movie entries')
   .input({
     query: z.object({
       watched: z
@@ -21,7 +16,7 @@ const list = forgeController
   })
   .callback(async ({ pb, query: { watched } }) => {
     const entries = await pb.getFullList
-      .collection('movies__entries')
+      .collection('entries')
       .filter([
         {
           field: 'is_watched',
@@ -32,11 +27,7 @@ const list = forgeController
       .execute()
 
     const total = (
-      await pb.getList
-        .collection('movies__entries')
-        .page(1)
-        .perPage(1)
-        .execute()
+      await pb.getList.collection('entries').page(1).perPage(1).execute()
     ).totalItems
 
     return {
@@ -65,175 +56,165 @@ const list = forgeController
     }
   })
 
-const create = forgeController
+export const create = forge
   .mutation()
-  .description({
-    en: 'Create a movie entry from TMDB',
-    ms: 'Cipta catatan filem daripada TMDB',
-    'zh-CN': '从 TMDB 创建电影条目',
-    'zh-TW': '從 TMDB 創建電影條目'
-  })
+  .description('Create a movie entry from TMDB')
   .input({
     query: z.object({
       id: z.string().transform(val => parseInt(val, 10))
     })
   })
   .statusCode(201)
-  .callback(async ({ pb, query: { id } }) => {
-    const apiKey = await getAPIKey('tmdb', pb)
-
-    if (!apiKey) {
-      throw new Error('API key not found')
-    }
-
-    const initialData = await pb.getFirstListItem
-      .collection('movies__entries')
-      .filter([
-        {
-          field: 'tmdb_id',
-          operator: '=',
-          value: id
-        }
-      ])
-      .execute()
-      .catch(() => null)
-
-    if (initialData) {
-      throw new Error('Entry already exists')
-    }
-
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`
+  .callback(
+    async ({
+      pb,
+      query: { id },
+      core: {
+        api: { getAPIKey }
       }
-    })
-      .then(res => res.json())
-      .catch(err => {
-        throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
-      })
+    }) => {
+      const apiKey = await getAPIKey('tmdb', pb)
 
-    const entryData = {
-      tmdb_id: response.id,
-      title: response.title,
-      original_title: response.original_title,
-      poster: response.poster_path,
-      genres: response.genres.map((genre: { name: string }) => genre.name),
-      duration: response.runtime,
-      overview: response.overview,
-      release_date: response.release_date,
-      countries: response.origin_country,
-      language: response.original_language
-    }
+      if (!apiKey) {
+        throw new Error('API key not found')
+      }
 
-    return await pb.create
-      .collection('movies__entries')
-      .data(entryData)
-      .execute()
-  })
+      const initialData = await pb.getFirstListItem
+        .collection('entries')
+        .filter([
+          {
+            field: 'tmdb_id',
+            operator: '=',
+            value: id
+          }
+        ])
+        .execute()
+        .catch(() => null)
 
-const update = forgeController
-  .mutation()
-  .description({
-    en: 'Update movie entry with the latest data from TMDB',
-    ms: 'Kemas kini catatan filem dengan data terkini daripada TMDB',
-    'zh-CN': '使用 TMDB 的最新数据更新电影条目',
-    'zh-TW': '使用 TMDB 的最新資料更新電影條目'
-  })
-  .input({
-    query: z.object({
-      id: z.string()
-    })
-  })
-  .existenceCheck('query', {
-    id: 'movies__entries'
-  })
-  .callback(async ({ pb, query: { id } }) => {
-    const apiKey = await getAPIKey('tmdb', pb)
+      if (initialData) {
+        throw new Error('Entry already exists')
+      }
 
-    if (!apiKey) {
-      throw new Error('API key not found')
-    }
-
-    const movieEntry = await pb.getOne
-      .collection('movies__entries')
-      .id(id)
-      .execute()
-
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieEntry.tmdb_id}`,
-      {
+      const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
         headers: {
           Authorization: `Bearer ${apiKey}`
         }
-      }
-    )
-      .then(res => res.json())
-      .catch(err => {
-        throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
       })
+        .then(res => res.json())
+        .catch(err => {
+          throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
+        })
 
-    const entryData = {
-      tmdb_id: response.id,
-      title: response.title,
-      original_title: response.original_title,
-      poster: response.poster_path,
-      genres: response.genres.map((genre: { name: string }) => genre.name),
-      duration: response.runtime,
-      overview: response.overview,
-      release_date: response.release_date,
-      countries: response.origin_country,
-      language: response.original_language
+      const entryData = {
+        tmdb_id: response.id,
+        title: response.title,
+        original_title: response.original_title,
+        poster: response.poster_path,
+        genres: response.genres.map((genre: { name: string }) => genre.name),
+        duration: response.runtime,
+        overview: response.overview,
+        release_date: response.release_date,
+        countries: response.origin_country,
+        language: response.original_language
+      }
+
+      return await pb.create.collection('entries').data(entryData).execute()
     }
+  )
 
-    return await pb.update
-      .collection('movies__entries')
-      .id(id)
-      .data(entryData)
-      .execute()
-  })
-
-const remove = forgeController
+export const update = forge
   .mutation()
-  .description({
-    en: 'Delete a movie entry',
-    ms: 'Padam catatan filem',
-    'zh-CN': '删除电影条目',
-    'zh-TW': '刪除電影條目'
-  })
+  .description('Update movie entry with the latest data from TMDB')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'movies__entries'
+    id: 'entries'
+  })
+  .callback(
+    async ({
+      pb,
+      query: { id },
+      core: {
+        api: { getAPIKey }
+      }
+    }) => {
+      const apiKey = await getAPIKey('tmdb', pb)
+
+      if (!apiKey) {
+        throw new Error('API key not found')
+      }
+
+      const movieEntry = await pb.getOne.collection('entries').id(id).execute()
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${movieEntry.tmdb_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`
+          }
+        }
+      )
+        .then(res => res.json())
+        .catch(err => {
+          throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
+        })
+
+      const entryData = {
+        tmdb_id: response.id,
+        title: response.title,
+        original_title: response.original_title,
+        poster: response.poster_path,
+        genres: response.genres.map((genre: { name: string }) => genre.name),
+        duration: response.runtime,
+        overview: response.overview,
+        release_date: response.release_date,
+        countries: response.origin_country,
+        language: response.original_language
+      }
+
+      return await pb.update
+        .collection('entries')
+        .id(id)
+        .data(entryData)
+        .execute()
+    }
+  )
+
+export const remove = forge
+  .mutation()
+  .description('Delete a movie entry')
+  .input({
+    query: z.object({
+      id: z.string()
+    })
+  })
+  .existenceCheck('query', {
+    id: 'entries'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('movies__entries').id(id).execute()
+    pb.delete.collection('entries').id(id).execute()
   )
 
-const toggleWatchStatus = forgeController
+export const toggleWatchStatus = forge
   .mutation()
-  .description({
-    en: 'Toggle watch status of a movie entry',
-    ms: 'Togol status tontonan catatan filem',
-    'zh-CN': '切换电影条目的观看状态',
-    'zh-TW': '切換電影條目的觀看狀態'
-  })
+  .description('Toggle watch status of a movie entry')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'movies__entries'
+    id: 'entries'
   })
   .callback(async ({ pb, query: { id } }) => {
-    const entry = await pb.getOne.collection('movies__entries').id(id).execute()
+    const entry = await pb.getOne.collection('entries').id(id).execute()
 
     return await pb.update
-      .collection('movies__entries')
+      .collection('entries')
       .id(id)
       .data({
         is_watched: !entry.is_watched,
@@ -243,11 +224,3 @@ const toggleWatchStatus = forgeController
       })
       .execute()
   })
-
-export default forgeRouter({
-  list,
-  create,
-  update,
-  remove,
-  toggleWatchStatus
-})

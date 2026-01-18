@@ -30,7 +30,7 @@ function MovieItem({
   data,
   type
 }: {
-  data: InferOutput<typeof forgeAPI.movies.entries.list>['entries'][number]
+  data: InferOutput<typeof forgeAPI.entries.list>['entries'][number]
   type: 'grid' | 'list'
 }) {
   const queryClient = useQueryClient()
@@ -42,7 +42,7 @@ function MovieItem({
   const { open } = useModalStore()
 
   const toggleWatchedMutation = useMutation(
-    forgeAPI.movies.entries.toggleWatchStatus
+    forgeAPI.entries.toggleWatchStatus
       .input({
         id: data.id
       })
@@ -63,7 +63,7 @@ function MovieItem({
   )
 
   const updateMovieDataMutation = useMutation(
-    forgeAPI.movies.entries.update.input({ id: data.id }).mutationOptions({
+    forgeAPI.entries.update.input({ id: data.id }).mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: ['movies', 'entries']
@@ -95,7 +95,7 @@ function MovieItem({
   }, [data])
 
   const deleteMutation = useMutation(
-    forgeAPI.movies.entries.remove.input({ id: data.id }).mutationOptions({
+    forgeAPI.entries.remove.input({ id: data.id }).mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['movies'] })
       },

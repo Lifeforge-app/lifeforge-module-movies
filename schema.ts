@@ -1,6 +1,6 @@
 import z from 'zod'
 
-const schemas = {
+export const schemas = {
   entries: {
     schema: z.object({
       tmdb_id: z.number(),

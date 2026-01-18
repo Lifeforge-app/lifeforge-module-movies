@@ -1,21 +1,17 @@
-import { forgeController, forgeRouter } from '@functions/routes'
-import { Location } from '@lib/locations/typescript/location.types'
-import { SCHEMAS } from '@schema'
+import { LocationSchema } from '@lifeforge/server-utils'
 import z from 'zod'
 
-const update = forgeController
+import forge from '../forge'
+import moviesSchemas from '../schema'
+
+export const update = forge
   .mutation()
-  .description({
-    en: 'Update ticket information for a movie entry',
-    ms: 'Kemas kini maklumat tiket untuk catatan filem',
-    'zh-CN': '更新电影条目的票务信息',
-    'zh-TW': '更新電影條目的票務資訊'
-  })
+  .description('Update ticket information for a movie entry')
   .input({
     query: z.object({
       id: z.string()
     }),
-    body: SCHEMAS.movies.entries.schema
+    body: moviesSchemas.entries
       .pick({
         ticket_number: true,
         theatre_number: true,
@@ -23,11 +19,11 @@ const update = forgeController
       })
       .extend({
         theatre_showtime: z.string().optional(),
-        theatre_location: Location.optional()
+        theatre_location: LocationSchema.optional()
       })
   })
   .existenceCheck('query', {
-    id: 'movies__entries'
+    id: 'entries'
   })
   .callback(({ pb, query: { id }, body }) => {
     const finalData = {
@@ -39,33 +35,24 @@ const update = forgeController
       }
     }
 
-    return pb.update
-      .collection('movies__entries')
-      .id(id)
-      .data(finalData)
-      .execute()
+    return pb.update.collection('entries').id(id).data(finalData).execute()
   })
 
-const clear = forgeController
+export const clear = forge
   .mutation()
-  .description({
-    en: 'Clear ticket information for a movie entry',
-    ms: 'Kosongkan maklumat tiket untuk catatan filem',
-    'zh-CN': '清除电影条目的票务信息',
-    'zh-TW': '清除電影條目的票務資訊'
-  })
+  .description('Clear ticket information for a movie entry')
   .input({
     query: z.object({
       id: z.string()
     })
   })
   .existenceCheck('query', {
-    id: 'movies__entries'
+    id: 'entries'
   })
   .statusCode(204)
   .callback(({ pb, query: { id } }) =>
     pb.update
-      .collection('movies__entries')
+      .collection('entries')
       .id(id)
       .data({
         ticket_number: '',
@@ -76,5 +63,3 @@ const clear = forgeController
       })
       .execute()
   )
-
-export default forgeRouter({ update, clear })

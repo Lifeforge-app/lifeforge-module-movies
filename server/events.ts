@@ -1,18 +1,17 @@
-import { PBService } from '@functions/database'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default async function getEvents({
   pb,
   start,
   end
 }: {
-  pb: PBService
+  pb: any
   start: string
   end: string
 }) {
   return (
-    await pb.getFullList
-      .collection('movies__entries')
+    (await pb.getFullList
+      .collection('entries')
       .filter([
         {
           field: 'theatre_showtime',
@@ -22,13 +21,13 @@ export default async function getEvents({
         { field: 'theatre_showtime', operator: '<=', value: end }
       ])
       .execute()
-      .catch(() => [])
+      .catch(() => [])) as any[]
   ).map(entry => ({
     id: entry.id,
     type: 'single' as const,
     title: entry.title,
     start: entry.theatre_showtime,
-    end: moment(entry.theatre_showtime)
+    end: dayjs(entry.theatre_showtime)
       .add(entry.duration, 'minutes')
       .toISOString(),
     category: '_movie',

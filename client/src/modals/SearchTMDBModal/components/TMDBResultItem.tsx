@@ -1,10 +1,11 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { Icon } from '@iconify/react'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Button } from 'lifeforge-ui'
 import { toast } from 'react-toastify'
 import { usePromiseLoading } from 'shared'
+
+import forgeAPI from '@/utils/forgeAPI'
 
 import type { TMDBSearchResults } from '..'
 
@@ -18,18 +19,14 @@ function TMDBResultItem({
   onAddToLibrary: () => Promise<void>
 }) {
   const addToLibraryMutation = useMutation(
-    forgeAPI.movies.entries.create
-      .input({ id: data.id.toString() })
-      .mutationOptions({
-        onSuccess: async () => {
-          await onAddToLibrary()
-        },
-        onError: (error: any) => {
-          toast.error(
-            `Failed to add movie: ${error.message || 'Unknown error'}`
-          )
-        }
-      })
+    forgeAPI.entries.create.input({ id: data.id.toString() }).mutationOptions({
+      onSuccess: async () => {
+        await onAddToLibrary()
+      },
+      onError: (error: any) => {
+        toast.error(`Failed to add movie: ${error.message || 'Unknown error'}`)
+      }
+    })
   )
 
   const [loading, onSubmit] = usePromiseLoading(() =>

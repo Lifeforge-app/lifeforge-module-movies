@@ -25,7 +25,7 @@ import SearchTMDBModal from './modals/SearchTMDBModal'
 import ShowTicketModal from './modals/ShowTicketModal'
 
 export type MovieEntry = InferOutput<
-  typeof forgeAPI.movies.entries.list
+  typeof forgeAPI.entries.list
 >['entries'][number]
 
 function Movies() {
@@ -44,7 +44,7 @@ function Movies() {
   )
 
   const entriesQuery = useQuery(
-    forgeAPI.movies.entries.list
+    forgeAPI.entries.list
       .input({
         watched: currentTab === 'watched' ? 'true' : 'false'
       })

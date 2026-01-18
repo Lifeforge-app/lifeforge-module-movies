@@ -1,6 +1,7 @@
+import { cleanSchemas } from '@lifeforge/server-utils'
 import z from 'zod'
 
-const moviesSchemas = {
+export const schemas = {
   entries: {
     schema: z.object({
       tmdb_id: z.number(),
@@ -254,4 +255,4 @@ const moviesSchemas = {
   }
 }
 
-export default moviesSchemas
+export default cleanSchemas(schemas)

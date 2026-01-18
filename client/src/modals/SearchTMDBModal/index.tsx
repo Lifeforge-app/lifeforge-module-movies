@@ -1,4 +1,3 @@
-import forgeAPI from '@/utils/forgeAPI'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -11,10 +10,12 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import type { InferOutput } from 'shared'
 
+import forgeAPI from '@/utils/forgeAPI'
+
 import TMDBLogo from './components/TMDBLogo'
 import TMDBResultsList from './components/TMDBResultsList'
 
-export type TMDBSearchResults = InferOutput<typeof forgeAPI.movies.tmdb.search>
+export type TMDBSearchResults = InferOutput<typeof forgeAPI.tmdb.search>
 
 function SearchTMDBModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient()
@@ -26,7 +27,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
   const [page, setPage] = useState(1)
 
   const searchResultsQuery = useQuery(
-    forgeAPI.movies.tmdb.search
+    forgeAPI.tmdb.search
       .input({
         q: queryToSearch,
         page: page.toString()
@@ -42,7 +43,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
     })
 
     await queryClient.invalidateQueries({
-      queryKey: forgeAPI.movies.tmdb.search.input({
+      queryKey: forgeAPI.tmdb.search.input({
         q: queryToSearch,
         page: page.toString()
       }).key

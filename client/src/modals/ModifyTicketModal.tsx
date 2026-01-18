@@ -23,7 +23,7 @@ function ModifyTicketModal({
   const { open } = useModalStore()
 
   const modifyTicketMutation = useMutation(
-    forgeAPI.movies.ticket.update
+    forgeAPI.ticket.update
       .input({
         id: initialData.id
       })
@@ -37,7 +37,7 @@ function ModifyTicketModal({
   )
 
   const deleteMutation = useMutation(
-    forgeAPI.movies.ticket.clear
+    forgeAPI.ticket.clear
       .input({
         id: initialData.id
       })
@@ -63,7 +63,7 @@ function ModifyTicketModal({
     })
 
   const { formProps } = defineForm<
-    InferInput<typeof forgeAPI.movies.ticket.update>['body']
+    InferInput<typeof forgeAPI.ticket.update>['body']
   >({
     icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
     title: `ticket.${type}`,

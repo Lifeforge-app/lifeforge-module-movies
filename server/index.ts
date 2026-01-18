@@ -1,11 +1,11 @@
-import { forgeRouter } from '@functions/routes'
+import { forgeRouter } from '@lifeforge/server-utils'
 
-import entriesRouter from './routes/entries'
-import ticketRouter from './routes/ticket'
-import tmdbRouter from './routes/tmdb'
+import * as entriesRoutes from './routes/entries'
+import * as ticketRoutes from './routes/ticket'
+import * as tmdbRoutes from './routes/tmdb'
 
 export default forgeRouter({
-  entries: entriesRouter,
-  ticket: ticketRouter,
-  tmdb: tmdbRouter
+  entries: entriesRoutes,
+  ticket: ticketRoutes,
+  tmdb: tmdbRoutes
 })

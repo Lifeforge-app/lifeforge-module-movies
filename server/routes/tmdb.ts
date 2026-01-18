@@ -1,6 +1,6 @@
-import { getAPIKey } from '@functions/database'
-import { forgeController, forgeRouter } from '@functions/routes'
 import z from 'zod'
+
+import forge from '../forge'
 
 export interface TMDBSearchResult {
   adult: boolean
@@ -20,14 +20,9 @@ export interface TMDBSearchResult {
   vote_count: number
 }
 
-const search = forgeController
+export const search = forge
   .query()
-  .description({
-    en: 'Search movies using TMDB API',
-    ms: 'Cari filem menggunakan API TMDB',
-    'zh-CN': '使用 TMDB API 搜索电影',
-    'zh-TW': '使用 TMDB API 搜尋電影'
-  })
+  .description('Search movies using TMDB API')
   .input({
     query: z.object({
       q: z.string().min(1, 'Query must not be empty'),
@@ -38,47 +33,53 @@ const search = forgeController
         .transform(val => parseInt(val) || 1)
     })
   })
-  .callback(async ({ pb, query: { q, page } }) => {
-    const apiKey = await getAPIKey('tmdb', pb)
-
-    if (!apiKey) {
-      throw new Error('API key not found')
-    }
-
-    const url = `https://api.themoviedb.org/3/search/movie?query=${decodeURIComponent(
-      q
-    )}&page=${page}`
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`
+  .callback(
+    async ({
+      pb,
+      query: { q, page },
+      core: {
+        api: { getAPIKey }
       }
-    }).then(res => res.json())
+    }) => {
+      const apiKey = await getAPIKey('tmdb', pb)
 
-    const allIds = await pb.getFullList
-      .collection('movies__entries')
-      .filter([
-        {
-          combination: '||',
-          filters: response.results.map((entry: { id: number }) => ({
-            field: 'tmdb_id',
-            operator: '=',
-            value: entry.id
-          }))
+      if (!apiKey) {
+        throw new Error('API key not found')
+      }
+
+      const url = `https://api.themoviedb.org/3/search/movie?query=${decodeURIComponent(
+        q
+      )}&page=${page}`
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`
         }
-      ])
-      .execute()
+      }).then(res => res.json())
 
-    response.results.forEach((entry: any) => {
-      entry.existed = allIds.some(e => e.tmdb_id === entry.id)
-    })
+      const allIds = await pb.getFullList
+        .collection('entries')
+        .filter([
+          {
+            combination: '||',
+            filters: response.results.map((entry: { id: number }) => ({
+              field: 'tmdb_id',
+              operator: '=',
+              value: entry.id
+            }))
+          }
+        ])
+        .execute()
 
-    return response as {
-      page: number
-      results: TMDBSearchResult[]
-      total_pages: number
-      total_results: number
+      response.results.forEach((entry: any) => {
+        entry.existed = allIds.some(e => e.tmdb_id === entry.id)
+      })
+
+      return response as {
+        page: number
+        results: TMDBSearchResult[]
+        total_pages: number
+        total_results: number
+      }
     }
-  })
-
-export default forgeRouter({ search })
+  )
