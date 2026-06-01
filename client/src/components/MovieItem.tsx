@@ -10,13 +10,13 @@ import {
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem
-} from 'lifeforge-ui'
-import { useModalStore } from 'lifeforge-ui'
+} from '@lifeforge/ui'
+import { useModalStore } from '@lifeforge/ui'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import type { InferOutput } from 'shared'
-import { usePersonalization, usePromiseLoading } from 'shared'
+import type { InferOutput } from '@lifeforge/shared'
+import { usePersonalization, usePromiseLoading } from '@lifeforge/shared'
 
 import forgeAPI from '@/utils/forgeAPI'
 

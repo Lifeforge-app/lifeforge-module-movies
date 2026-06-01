@@ -1,4 +1,4 @@
-import { EmptyStateScreen, Pagination } from 'lifeforge-ui'
+import { EmptyStateScreen, Pagination } from '@lifeforge/ui'
 
 import type { TMDBSearchResults } from '..'
 import TMDBResultItem from './TMDBResultItem'

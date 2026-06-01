@@ -1,9 +1,9 @@
 import { Icon } from '@iconify/react'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { Button } from 'lifeforge-ui'
+import { Button } from '@lifeforge/ui'
 import { toast } from 'react-toastify'
-import { usePromiseLoading } from 'shared'
+import { usePromiseLoading } from '@lifeforge/shared'
 
 import forgeAPI from '@/utils/forgeAPI'
 

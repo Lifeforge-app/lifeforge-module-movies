@@ -5,10 +5,10 @@ import {
   ModalHeader,
   SearchInput,
   WithQuery
-} from 'lifeforge-ui'
+} from '@lifeforge/ui'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import type { InferOutput } from 'shared'
+import type { InferOutput } from '@lifeforge/shared'
 
 import forgeAPI from '@/utils/forgeAPI'
 
