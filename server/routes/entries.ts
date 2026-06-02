@@ -1,27 +1,33 @@
 import z from 'zod'
 
 import forge from '../forge'
+import movieSchemas from '../schema'
 
 export const list = forge
-  .query()
-  .description('Get all movie entries')
-  .input({
-    query: z.object({
-      watched: z
-        .enum(['true', 'false'])
-        .optional()
-        .default('false')
-        .transform(val => (val === 'true' ? true : false))
-    })
+  .query({
+    description: 'Get all movie entries',
+    input: {
+      query: z.object({
+        watched: z.enum(['true', 'false']).optional().default('false')
+      })
+    },
+    output: {
+      OK: z.object({
+        total: z.number(),
+        entries: z.array(movieSchemas.entries)
+      })
+    }
   })
-  .callback(async ({ pb, query: { watched } }) => {
+  .callback(async ({ pb, query: { watched }, response }) => {
+    const parsedWatched = watched === 'true' ? true : false
+
     const entries = await pb.getFullList
       .collection('entries')
       .filter([
         {
           field: 'is_watched',
           operator: '=',
-          value: watched
+          value: parsedWatched
         }
       ])
       .execute()
@@ -30,53 +36,60 @@ export const list = forge
       await pb.getList.collection('entries').page(1).perPage(1).execute()
     ).totalItems
 
-    return {
+    return response.ok({
       total,
       entries: entries.sort((a, b) => {
         if (a.is_watched !== b.is_watched) {
-          return a.is_watched ? 1 : -1 // Unwatched entries come first
+          return a.is_watched ? 1 : -1
         }
 
         if (
           (a.ticket_number && !b.ticket_number) ||
           (!a.ticket_number && b.ticket_number)
         ) {
-          return a.ticket_number ? -1 : 1 // Entries with tickets come first
+          return a.ticket_number ? -1 : 1
         }
 
         if (a.theatre_showtime && b.theatre_showtime) {
           return (
             new Date(a.theatre_showtime).getTime() -
-            new Date(b.theatre_showtime).getTime() // Earlier showtimes come first
+            new Date(b.theatre_showtime).getTime()
           )
         }
 
         return a.title.localeCompare(b.title)
       })
-    }
+    })
   })
 
 export const create = forge
-  .mutation()
-  .description('Create a movie entry from TMDB')
-  .input({
-    query: z.object({
-      id: z.string().transform(val => parseInt(val, 10))
-    })
+  .mutation({
+    description: 'Create a movie entry from TMDB',
+    input: {
+      query: z.object({
+        id: z.string()
+      })
+    },
+    output: {
+      CREATED: movieSchemas.entries,
+      BAD_REQUEST: z.string()
+    }
   })
-  .statusCode(201)
   .callback(
     async ({
       pb,
       query: { id },
       core: {
         api: { getAPIKey }
-      }
+      },
+      response
     }) => {
+      const parsedId = parseInt(id, 10)
+
       const apiKey = await getAPIKey('tmdb', pb)
 
       if (!apiKey) {
-        throw new Error('API key not found')
+        return response.badRequest('API key not found')
       }
 
       const initialData = await pb.getFirstListItem
@@ -85,53 +98,66 @@ export const create = forge
           {
             field: 'tmdb_id',
             operator: '=',
-            value: id
+            value: parsedId
           }
         ])
         .execute()
         .catch(() => null)
 
       if (initialData) {
-        throw new Error('Entry already exists')
+        return response.badRequest('Entry already exists')
       }
 
-      const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
+      const tmdbRes = await fetch(
+        `https://api.themoviedb.org/3/movie/${parsedId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`
+          }
         }
-      })
-        .then(res => res.json())
-        .catch(err => {
-          throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
-        })
+      )
+
+      if (!tmdbRes.ok) {
+        return response.badRequest('Failed to fetch data from TMDB')
+      }
+
+      const tmdbData = await tmdbRes.json()
 
       const entryData = {
-        tmdb_id: response.id,
-        title: response.title,
-        original_title: response.original_title,
-        poster: response.poster_path,
-        genres: response.genres.map((genre: { name: string }) => genre.name),
-        duration: response.runtime,
-        overview: response.overview,
-        release_date: response.release_date,
-        countries: response.origin_country,
-        language: response.original_language
+        tmdb_id: tmdbData.id,
+        title: tmdbData.title,
+        original_title: tmdbData.original_title,
+        poster: tmdbData.poster_path,
+        genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
+        duration: tmdbData.runtime,
+        overview: tmdbData.overview,
+        release_date: tmdbData.release_date,
+        countries: tmdbData.origin_country,
+        language: tmdbData.original_language
       }
 
-      return await pb.create.collection('entries').data(entryData).execute()
+      return response.created(
+        await pb.create.collection('entries').data(entryData).execute()
+      )
     }
   )
 
 export const update = forge
-  .mutation()
-  .description('Update movie entry with the latest data from TMDB')
-  .input({
-    query: z.object({
-      id: z.string()
-    })
-  })
-  .existenceCheck('query', {
-    id: 'entries'
+  .mutation({
+    description: 'Update movie entry with the latest data from TMDB',
+    input: {
+      query: z.object({
+        id: z.string()
+      })
+    },
+    existenceCheck: {
+      query: { id: 'entries' }
+    },
+    output: {
+      OK: movieSchemas.entries,
+      BAD_REQUEST: z.string(),
+      NOT_FOUND: true
+    }
   })
   .callback(
     async ({
@@ -139,17 +165,18 @@ export const update = forge
       query: { id },
       core: {
         api: { getAPIKey }
-      }
+      },
+      response
     }) => {
       const apiKey = await getAPIKey('tmdb', pb)
 
       if (!apiKey) {
-        throw new Error('API key not found')
+        return response.badRequest('API key not found')
       }
 
       const movieEntry = await pb.getOne.collection('entries').id(id).execute()
 
-      const response = await fetch(
+      const tmdbRes = await fetch(
         `https://api.themoviedb.org/3/movie/${movieEntry.tmdb_id}`,
         {
           headers: {
@@ -157,70 +184,87 @@ export const update = forge
           }
         }
       )
-        .then(res => res.json())
-        .catch(err => {
-          throw new Error(`Failed to fetch data from TMDB: ${err.message}`)
-        })
 
-      const entryData = {
-        tmdb_id: response.id,
-        title: response.title,
-        original_title: response.original_title,
-        poster: response.poster_path,
-        genres: response.genres.map((genre: { name: string }) => genre.name),
-        duration: response.runtime,
-        overview: response.overview,
-        release_date: response.release_date,
-        countries: response.origin_country,
-        language: response.original_language
+      if (!tmdbRes.ok) {
+        return response.badRequest('Failed to fetch data from TMDB')
       }
 
-      return await pb.update
-        .collection('entries')
-        .id(id)
-        .data(entryData)
-        .execute()
+      const tmdbData = await tmdbRes.json()
+
+      const entryData = {
+        tmdb_id: tmdbData.id,
+        title: tmdbData.title,
+        original_title: tmdbData.original_title,
+        poster: tmdbData.poster_path,
+        genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
+        duration: tmdbData.runtime,
+        overview: tmdbData.overview,
+        release_date: tmdbData.release_date,
+        countries: tmdbData.origin_country,
+        language: tmdbData.original_language
+      }
+
+      return response.ok(
+        await pb.update
+          .collection('entries')
+          .id(id)
+          .data(entryData)
+          .execute()
+      )
     }
   )
 
 export const remove = forge
-  .mutation()
-  .description('Delete a movie entry')
-  .input({
-    query: z.object({
-      id: z.string()
-    })
+  .mutation({
+    description: 'Delete a movie entry',
+    input: {
+      query: z.object({
+        id: z.string()
+      })
+    },
+    existenceCheck: {
+      query: { id: 'entries' }
+    },
+    output: {
+      NO_CONTENT: true,
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'entries'
+  .callback(async ({ pb, query: { id }, response }) => {
+    await pb.delete.collection('entries').id(id).execute()
+
+    return response.noContent()
   })
-  .statusCode(204)
-  .callback(({ pb, query: { id } }) =>
-    pb.delete.collection('entries').id(id).execute()
-  )
 
 export const toggleWatchStatus = forge
-  .mutation()
-  .description('Toggle watch status of a movie entry')
-  .input({
-    query: z.object({
-      id: z.string()
-    })
+  .mutation({
+    description: 'Toggle watch status of a movie entry',
+    input: {
+      query: z.object({
+        id: z.string()
+      })
+    },
+    existenceCheck: {
+      query: { id: 'entries' }
+    },
+    output: {
+      OK: movieSchemas.entries,
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'entries'
-  })
-  .callback(async ({ pb, query: { id } }) => {
+  .callback(async ({ pb, query: { id }, response }) => {
     const entry = await pb.getOne.collection('entries').id(id).execute()
 
-    return await pb.update
-      .collection('entries')
-      .id(id)
-      .data({
-        is_watched: !entry.is_watched,
-        watch_date: !entry.is_watched
-          ? entry.theatre_showtime || new Date().toISOString()
-          : null
-      })
-      .execute()
+    return response.ok(
+      await pb.update
+        .collection('entries')
+        .id(id)
+        .data({
+          is_watched: !entry.is_watched,
+          watch_date: !entry.is_watched
+            ? entry.theatre_showtime || new Date().toISOString()
+            : null
+        })
+        .execute()
+    )
   })

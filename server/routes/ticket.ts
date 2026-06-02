@@ -5,27 +5,32 @@ import forge from '../forge'
 import moviesSchemas from '../schema'
 
 export const update = forge
-  .mutation()
-  .description('Update ticket information for a movie entry')
-  .input({
-    query: z.object({
-      id: z.string()
-    }),
-    body: moviesSchemas.entries
-      .pick({
-        ticket_number: true,
-        theatre_number: true,
-        theatre_seat: true
-      })
-      .extend({
-        theatre_showtime: z.string().optional(),
-        theatre_location: LocationSchema.optional()
-      })
+  .mutation({
+    description: 'Update ticket information for a movie entry',
+    input: {
+      query: z.object({
+        id: z.string()
+      }),
+      body: moviesSchemas.entries
+        .pick({
+          ticket_number: true,
+          theatre_number: true,
+          theatre_seat: true
+        })
+        .extend({
+          theatre_showtime: z.string().optional(),
+          theatre_location: LocationSchema.optional()
+        })
+    },
+    existenceCheck: {
+      query: { id: 'entries' }
+    },
+    output: {
+      OK: moviesSchemas.entries,
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'entries'
-  })
-  .callback(({ pb, query: { id }, body }) => {
+  .callback(async ({ pb, query: { id }, body, response }) => {
     const finalData = {
       ...body,
       theatre_location: body.theatre_location?.name,
@@ -35,23 +40,29 @@ export const update = forge
       }
     }
 
-    return pb.update.collection('entries').id(id).data(finalData).execute()
+    return response.ok(
+      await pb.update.collection('entries').id(id).data(finalData).execute()
+    )
   })
 
 export const clear = forge
-  .mutation()
-  .description('Clear ticket information for a movie entry')
-  .input({
-    query: z.object({
-      id: z.string()
-    })
+  .mutation({
+    description: 'Clear ticket information for a movie entry',
+    input: {
+      query: z.object({
+        id: z.string()
+      })
+    },
+    existenceCheck: {
+      query: { id: 'entries' }
+    },
+    output: {
+      NO_CONTENT: true,
+      NOT_FOUND: true
+    }
   })
-  .existenceCheck('query', {
-    id: 'entries'
-  })
-  .statusCode(204)
-  .callback(({ pb, query: { id } }) =>
-    pb.update
+  .callback(async ({ pb, query: { id }, response }) => {
+    await pb.update
       .collection('entries')
       .id(id)
       .data({
@@ -62,4 +73,6 @@ export const clear = forge
         theatre_showtime: ''
       })
       .execute()
-  )
+
+    return response.noContent()
+  })

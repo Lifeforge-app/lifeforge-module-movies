@@ -2,36 +2,44 @@ import z from 'zod'
 
 import forge from '../forge'
 
-export interface TMDBSearchResult {
-  adult: boolean
-  backdrop_path: string
-  genre_ids: number[]
-  existed: boolean
-  id: number
-  original_language: string
-  original_title: string
-  overview: string
-  popularity: number
-  poster_path: string
-  release_date: string
-  title: string
-  video: boolean
-  vote_average: number
-  vote_count: number
-}
+const TMDBSearchResultSchema = z.object({
+  adult: z.boolean(),
+  backdrop_path: z.string(),
+  genre_ids: z.array(z.number()),
+  existed: z.boolean(),
+  id: z.number(),
+  original_language: z.string(),
+  original_title: z.string(),
+  overview: z.string(),
+  popularity: z.number(),
+  poster_path: z.string(),
+  release_date: z.string(),
+  title: z.string(),
+  video: z.boolean(),
+  vote_average: z.number(),
+  vote_count: z.number()
+})
+
+const TMDBResponseSchema = z.object({
+  page: z.number(),
+  results: z.array(TMDBSearchResultSchema),
+  total_pages: z.number(),
+  total_results: z.number()
+})
 
 export const search = forge
-  .query()
-  .description('Search movies using TMDB API')
-  .input({
-    query: z.object({
-      q: z.string().min(1, 'Query must not be empty'),
-      page: z
-        .string()
-        .optional()
-        .default('1')
-        .transform(val => parseInt(val) || 1)
-    })
+  .query({
+    description: 'Search movies using TMDB API',
+    input: {
+      query: z.object({
+        q: z.string().min(1, 'Query must not be empty'),
+        page: z.string().optional().default('1')
+      })
+    },
+    output: {
+      OK: TMDBResponseSchema,
+      BAD_REQUEST: z.string()
+    }
   })
   .callback(
     async ({
@@ -39,30 +47,35 @@ export const search = forge
       query: { q, page },
       core: {
         api: { getAPIKey }
-      }
+      },
+      response
     }) => {
+      const parsedPage = parseInt(page) || 1
+
       const apiKey = await getAPIKey('tmdb', pb)
 
       if (!apiKey) {
-        throw new Error('API key not found')
+        return response.badRequest('API key not found')
       }
 
       const url = `https://api.themoviedb.org/3/search/movie?query=${decodeURIComponent(
         q
-      )}&page=${page}`
+      )}&page=${parsedPage}`
 
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${apiKey}`
         }
-      }).then(res => res.json())
+      })
+
+      const tmdbData = await res.json()
 
       const allIds = await pb.getFullList
         .collection('entries')
         .filter([
           {
             combination: '||',
-            filters: response.results.map((entry: { id: number }) => ({
+            filters: tmdbData.results.map((entry: { id: number }) => ({
               field: 'tmdb_id',
               operator: '=',
               value: entry.id
@@ -71,15 +84,10 @@ export const search = forge
         ])
         .execute()
 
-      response.results.forEach((entry: any) => {
+      tmdbData.results.forEach((entry: any) => {
         entry.existed = allIds.some(e => e.tmdb_id === entry.id)
       })
 
-      return response as {
-        page: number
-        results: TMDBSearchResult[]
-        total_pages: number
-        total_results: number
-      }
+      return response.ok(tmdbData as unknown as z.infer<typeof TMDBResponseSchema>)
     }
   )
