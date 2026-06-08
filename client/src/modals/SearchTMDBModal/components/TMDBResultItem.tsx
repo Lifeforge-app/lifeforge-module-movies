@@ -5,7 +5,7 @@ import { Button } from '@lifeforge/ui'
 import { toast } from 'react-toastify'
 import { usePromiseLoading } from '@lifeforge/shared'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import type { TMDBSearchResults } from '..'
 

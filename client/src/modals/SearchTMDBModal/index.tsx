@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import type { InferOutput } from '@lifeforge/shared'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import TMDBLogo from './components/TMDBLogo'
 import TMDBResultsList from './components/TMDBResultsList'

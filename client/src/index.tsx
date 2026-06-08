@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from '@lifeforge/shared'
 import type { InferOutput } from '@lifeforge/shared'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import MovieGrid from './components/MovieGrid'
 import MovieList from './components/MovieList'

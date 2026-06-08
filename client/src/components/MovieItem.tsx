@@ -18,7 +18,7 @@ import { toast } from 'react-toastify'
 import type { InferOutput } from '@lifeforge/shared'
 import { usePersonalization, usePromiseLoading } from '@lifeforge/shared'
 
-import forgeAPI from '@/utils/forgeAPI'
+import { forgeAPI } from '@/manifest'
 
 import ModifyTicketModal from '../modals/ModifyTicketModal'
 import ShowTicketModal from '../modals/ShowTicketModal'
