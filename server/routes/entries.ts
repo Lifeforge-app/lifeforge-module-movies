@@ -205,11 +205,7 @@ export const update = forge
       }
 
       return response.ok(
-        await pb.update
-          .collection('entries')
-          .id(id)
-          .data(entryData)
-          .execute()
+        await pb.update.collection('entries').id(id).data(entryData).execute()
       )
     }
   )

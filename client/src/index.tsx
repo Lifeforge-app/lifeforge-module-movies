@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
-import { useSearchParams } from 'react-router'
 import {
   Button,
   EmptyStateScreen,
@@ -13,8 +13,9 @@ import {
   SearchInput,
   Tabs,
   ViewModeSelector,
-  WithQuery
-, useModalStore } from '@lifeforge/ui'
+  WithQuery,
+  useModalStore
+} from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

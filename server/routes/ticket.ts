@@ -1,5 +1,6 @@
-import { LocationSchema } from '@lifeforge/server-utils'
 import z from 'zod'
+
+import { LocationSchema } from '@lifeforge/server-utils'
 
 import forge from '../forge'
 import moviesSchemas from '../schema'

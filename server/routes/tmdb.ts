@@ -88,6 +88,8 @@ export const search = forge
         entry.existed = allIds.some(e => e.tmdb_id === entry.id)
       })
 
-      return response.ok(tmdbData as unknown as z.infer<typeof TMDBResponseSchema>)
+      return response.ok(
+        tmdbData as unknown as z.infer<typeof TMDBResponseSchema>
+      )
     }
   )

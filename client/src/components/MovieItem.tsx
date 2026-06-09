@@ -7,15 +7,18 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { InferOutput } from '@lifeforge/api'
-import { usePersonalization } from '@lifeforge/ui'
 import { usePromiseLoading } from '@lifeforge/api'
-import { Icon ,
+import { usePersonalization } from '@lifeforge/ui'
+import {
   Button,
   Card,
   ConfirmationModal,
   ContextMenu,
-  ContextMenuItem
-, useModalStore , toast } from '@lifeforge/ui'
+  ContextMenuItem,
+  Icon,
+  toast,
+  useModalStore
+} from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

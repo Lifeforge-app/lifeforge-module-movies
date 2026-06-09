@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 
 import { usePromiseLoading } from '@lifeforge/api'
-import { Icon , Button , toast } from '@lifeforge/ui'
+import { Button, Icon, toast } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

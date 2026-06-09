@@ -1,7 +1,7 @@
-import { Icon , ModalHeader } from '@lifeforge/ui'
 import dayjs from 'dayjs'
 import { QRCodeSVG } from 'qrcode.react'
 
+import { Icon, ModalHeader } from '@lifeforge/ui'
 
 import type { MovieEntry } from '..'
 

@@ -7,8 +7,9 @@ import {
   EmptyStateScreen,
   ModalHeader,
   SearchInput,
-  WithQuery
-, toast } from '@lifeforge/ui'
+  WithQuery,
+  toast
+} from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
