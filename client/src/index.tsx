@@ -21,7 +21,6 @@ import { forgeAPI } from '@/manifest'
 
 import MovieGrid from './components/MovieGrid'
 import MovieList from './components/MovieList'
-import './index.css'
 import SearchTMDBModal from './modals/SearchTMDBModal'
 import ShowTicketModal from './modals/ShowTicketModal'
 
