@@ -1,22 +1,21 @@
-import { Icon } from '@iconify/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import {
+import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import type { InferOutput } from '@lifeforge/api'
+import { usePersonalization } from '@lifeforge/ui'
+import { usePromiseLoading } from '@lifeforge/api'
+import { Icon ,
   Button,
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem
-} from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { toast } from 'react-toastify'
-import type { InferOutput } from '@lifeforge/shared'
-import { usePersonalization, usePromiseLoading } from '@lifeforge/shared'
+, useModalStore , toast } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -59,7 +58,7 @@ function MovieItem({
   )
 
   const [toggleWatchedLoading, handleToggleWatched] = usePromiseLoading(() =>
-    toggleWatchedMutation.mutateAsync({})
+    toggleWatchedMutation.mutateAsync(undefined)
   )
 
   const updateMovieDataMutation = useMutation(
@@ -78,7 +77,7 @@ function MovieItem({
   )
 
   const [updateMovieDataLoading, handleUpdateMovieData] = usePromiseLoading(
-    () => updateMovieDataMutation.mutateAsync({})
+    () => updateMovieDataMutation.mutateAsync(undefined)
   )
 
   const handleShowTicket = useCallback(() => {
@@ -111,7 +110,7 @@ function MovieItem({
       description: 'Are you sure you want to delete this movie?',
       confirmationButton: 'delete',
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
   }, [data])

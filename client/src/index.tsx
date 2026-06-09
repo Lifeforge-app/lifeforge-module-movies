@@ -1,4 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import type { InferOutput } from '@lifeforge/api'
+import { useSearchParams } from 'react-router'
 import {
   Button,
   EmptyStateScreen,
@@ -9,12 +14,7 @@ import {
   Tabs,
   ViewModeSelector,
   WithQuery
-} from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
-import { useCallback, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useSearchParams } from '@lifeforge/shared'
-import type { InferOutput } from '@lifeforge/shared'
+, useModalStore } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ConfirmationModal, FormModal, defineForm } from '@lifeforge/ui'
-import { useModalStore } from '@lifeforge/ui'
-import { toast } from 'react-toastify'
-import type { InferInput } from '@lifeforge/shared'
+
+import type { InferInput } from '@lifeforge/api'
+import { ConfirmationModal, FormModal, defineForm , useModalStore , toast } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -58,7 +57,7 @@ function ModifyTicketModal({
       description: 'Are you sure you want to delete this ticket?',
       confirmationButton: 'delete',
       onConfirm: async () => {
-        await deleteMutation.mutateAsync({})
+        await deleteMutation.mutateAsync(undefined)
       }
     })
 

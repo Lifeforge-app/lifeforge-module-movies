@@ -1,14 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+
+import type { InferOutput } from '@lifeforge/api'
 import {
   Button,
   EmptyStateScreen,
   ModalHeader,
   SearchInput,
   WithQuery
-} from '@lifeforge/ui'
-import { useState } from 'react'
-import { toast } from 'react-toastify'
-import type { InferOutput } from '@lifeforge/shared'
+, toast } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 

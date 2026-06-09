@@ -1,9 +1,8 @@
-import { Icon } from '@iconify/react'
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { Button } from '@lifeforge/ui'
-import { toast } from 'react-toastify'
-import { usePromiseLoading } from '@lifeforge/shared'
+
+import { usePromiseLoading } from '@lifeforge/api'
+import { Icon , Button , toast } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -30,7 +29,7 @@ function TMDBResultItem({
   )
 
   const [loading, onSubmit] = usePromiseLoading(() =>
-    addToLibraryMutation.mutateAsync({})
+    addToLibraryMutation.mutateAsync(undefined)
   )
 
   return (
