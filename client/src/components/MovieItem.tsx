@@ -8,8 +8,7 @@ import { useModuleTranslation } from '@lifeforge/localization'
 
 import type { InferOutput } from '@lifeforge/api'
 import { usePromiseLoading } from '@lifeforge/api'
-import { usePersonalization } from '@lifeforge/ui'
-import {
+import { usePersonalization ,
   Button,
   Card,
   ConfirmationModal,
@@ -36,11 +35,8 @@ function MovieItem({
   type: 'grid' | 'list'
 }) {
   const queryClient = useQueryClient()
-
   const { t } = useModuleTranslation()
-
   const { language } = usePersonalization()
-
   const { open } = useModalStore()
 
   const toggleWatchedMutation = useMutation(

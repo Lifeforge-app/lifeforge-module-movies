@@ -30,13 +30,9 @@ export type MovieEntry = InferOutput<
 
 function Movies() {
   const { open } = useModalStore()
-
   const { t } = useModuleTranslation()
-
   const [searchParams, setSearchParams] = useSearchParams()
-
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-
   const [searchQuery, setSearchQuery] = useState('')
 
   const [currentTab, setCurrentTab] = useState<'unwatched' | 'watched'>(

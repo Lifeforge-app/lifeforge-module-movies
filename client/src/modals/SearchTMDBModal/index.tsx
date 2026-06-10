@@ -20,11 +20,8 @@ export type TMDBSearchResults = InferOutput<typeof forgeAPI.tmdb.search>
 
 function SearchTMDBModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient()
-
   const [searchQuery, setSearchQuery] = useState('')
-
   const [queryToSearch, setQueryToSearch] = useState('')
-
   const [page, setPage] = useState(1)
 
   const searchResultsQuery = useQuery(

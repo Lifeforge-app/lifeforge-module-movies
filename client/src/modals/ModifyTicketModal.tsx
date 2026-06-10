@@ -24,7 +24,6 @@ function ModifyTicketModal({
   onClose: () => void
 }) {
   const queryClient = useQueryClient()
-
   const { open } = useModalStore()
 
   const modifyTicketMutation = useMutation(
