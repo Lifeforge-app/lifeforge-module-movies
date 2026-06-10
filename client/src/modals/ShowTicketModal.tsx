@@ -16,12 +16,7 @@ function ShowTicketModal({
 }) {
   return (
     <div className="lg:max-w-[20rem]">
-      <ModalHeader
-        icon="tabler:ticket"
-        namespace="apps.movies"
-        title="ticket.view"
-        onClose={onClose}
-      />
+      <ModalHeader icon="tabler:ticket" title="ticket.view" onClose={onClose} />
       {entry && (
         <>
           <div className="flex-center w-full">

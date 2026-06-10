@@ -4,11 +4,11 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useCallback } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 
 import type { InferOutput } from '@lifeforge/api'
 import { usePromiseLoading } from '@lifeforge/api'
-import { usePersonalization ,
+import { useModuleTranslation } from '@lifeforge/localization'
+import {
   Button,
   Card,
   ConfirmationModal,
@@ -16,7 +16,8 @@ import { usePersonalization ,
   ContextMenuItem,
   Icon,
   toast,
-  useModalStore
+  useModalStore,
+  usePersonalization
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
@@ -215,7 +216,6 @@ function MovieItem({
               className="w-full"
               icon="tabler:check"
               loading={toggleWatchedLoading}
-              namespace="apps.movies"
               variant="secondary"
               onClick={handleToggleWatched}
             >
@@ -226,7 +226,6 @@ function MovieItem({
             <Button
               className="w-full"
               icon="tabler:ticket"
-              namespace="apps.movies"
               variant={data.is_watched ? 'secondary' : 'primary'}
               onClick={handleShowTicket}
             >
@@ -252,21 +251,18 @@ function MovieItem({
           <ContextMenuItem
             icon="tabler:eye-off"
             label="Mark as Unwatched"
-            namespace="apps.movies"
             onClick={handleToggleWatched}
           />
         )}
         <ContextMenuItem
           icon="tabler:ticket"
           label={data.ticket_number ? 'Update Ticket' : 'Add Ticket'}
-          namespace="apps.movies"
           onClick={handleUpdateTicket}
         />
         <ContextMenuItem
           icon="tabler:refresh"
           label="Update Movie Data"
           loading={updateMovieDataLoading}
-          namespace="apps.movies"
           shouldCloseMenuOnClick={false}
           onClick={handleUpdateMovieData}
         />

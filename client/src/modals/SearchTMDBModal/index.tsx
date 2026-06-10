@@ -67,14 +67,12 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
           </p>
         }
         icon="tabler:movie"
-        namespace="apps.movies"
         title="Search TMDB"
         onClose={onClose}
       />
       <div className="flex flex-col items-center gap-2 sm:flex-row">
         <SearchInput
           className="component-bg-lighter-with-hover"
-          namespace="apps.movies"
           searchTarget="movie"
           value={searchQuery}
           onChange={setSearchQuery}
@@ -118,8 +116,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
             <EmptyStateScreen
               icon={<TMDBLogo className="h-24" />}
               message={{
-                id: 'tmdb',
-                namespace: 'apps.movies'
+                id: 'tmdb'
               }}
             />
           </div>

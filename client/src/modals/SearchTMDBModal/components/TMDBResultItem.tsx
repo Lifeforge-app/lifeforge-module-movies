@@ -61,7 +61,6 @@ function TMDBResultItem({
           disabled={isAdded}
           icon="tabler:plus"
           loading={loading}
-          namespace="apps.movies"
           variant={isAdded ? 'plain' : 'primary'}
           onClick={onSubmit}
         >

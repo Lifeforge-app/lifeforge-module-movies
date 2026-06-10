@@ -24,8 +24,7 @@ function TMDBResultsList({
         <EmptyStateScreen
           icon="tabler:search-off"
           message={{
-            id: 'search',
-            namespace: 'apps.movies'
+            id: 'search'
           }}
         />
       </div>

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
-import { useModuleTranslation } from '@lifeforge/localization'
 import { useSearchParams } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Button,
   EmptyStateScreen,
@@ -85,7 +85,6 @@ function Movies() {
       <div className="flex items-center gap-2">
         <SearchInput
           debounceMs={300}
-          namespace="apps.movies"
           searchTarget="movie"
           value={searchQuery}
           onChange={setSearchQuery}
@@ -141,8 +140,7 @@ function Movies() {
                   }}
                   icon="tabler:movie-off"
                   message={{
-                    id: 'library',
-                    namespace: 'apps.movies'
+                    id: 'library'
                   }}
                 />
               ) : (
