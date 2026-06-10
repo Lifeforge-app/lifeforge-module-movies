@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 import { useSearchParams } from 'react-router'
 
 import type { InferOutput } from '@lifeforge/api'
@@ -31,7 +31,7 @@ export type MovieEntry = InferOutput<
 function Movies() {
   const { open } = useModalStore()
 
-  const { t } = useTranslation('apps.movies')
+  const { t } = useModuleTranslation()
 
   const [searchParams, setSearchParams] = useSearchParams()
 

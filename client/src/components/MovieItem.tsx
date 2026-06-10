@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useModuleTranslation } from '@lifeforge/localization'
 
 import type { InferOutput } from '@lifeforge/api'
 import { usePromiseLoading } from '@lifeforge/api'
@@ -37,7 +37,7 @@ function MovieItem({
 }) {
   const queryClient = useQueryClient()
 
-  const { t } = useTranslation('apps.movies')
+  const { t } = useModuleTranslation()
 
   const { language } = usePersonalization()
 
