@@ -1,10 +1,17 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { useForm } from 'react-hook-form'
+import z from 'zod'
 
-import type { InferInput } from '@lifeforge/api'
 import {
+  Button,
   ConfirmationModal,
+  DateField,
   FormModal,
-  defineForm,
+  LocationField,
+  TextField,
+  createDefaultValues,
   toast,
   useModalStore
 } from '@lifeforge/ui'
@@ -12,6 +19,23 @@ import {
 import { forgeAPI } from '@/manifest'
 
 import type { MovieEntry } from '..'
+
+const schema = z.object({
+  ticket_number: z.string().min(1, 'Required'),
+  theatre_seat: z.string().catch(''),
+  theatre_location: z
+    .object({
+      name: z.string(),
+      location: z.object({
+        latitude: z.number(),
+        longitude: z.number()
+      }),
+      formattedAddress: z.string()
+    })
+    .optional(),
+  theatre_showtime: z.string().catch(''),
+  theatre_number: z.string().catch('')
+})
 
 function ModifyTicketModal({
   data: { type, initialData },
@@ -34,7 +58,7 @@ function ModifyTicketModal({
       .mutationOptions({
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ['movies', 'entries']
+            queryKey: forgeAPI.entries.key
           })
         }
       })
@@ -48,7 +72,7 @@ function ModifyTicketModal({
       .mutationOptions({
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ['movies', 'entries']
+            queryKey: forgeAPI.entries.key
           })
           toast.success('Ticket deleted successfully!')
           onClose()
@@ -66,78 +90,88 @@ function ModifyTicketModal({
       }
     })
 
-  const { formProps } = defineForm<
-    InferInput<typeof forgeAPI.ticket.update>['body']
-  >({
-    icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
-    title: `ticket.${type}`,
-    namespace: 'apps.movies',
-    onClose,
-    submitButton: type,
-    actionButton: {
-      dangerous: true,
-      icon: 'tabler:trash',
-      onClick: handleDeleteTicket
-    }
-  })
-    .typesMap({
-      ticket_number: 'text',
-      theatre_seat: 'text',
-      theatre_location: 'location',
-      theatre_showtime: 'datetime',
-      theatre_number: 'text'
-    })
-    .setupFields({
-      ticket_number: {
-        required: true,
-        label: 'Ticket number',
-        icon: 'tabler:ticket',
-        placeholder: '123456789',
-        qrScanner: true
-      },
-      theatre_seat: {
-        label: 'Theatre seat',
-        icon: 'mdi:love-seat-outline',
-        placeholder: 'A1'
-      },
-      theatre_location: {
-        label: 'Theatre location',
-        type: 'location'
-      },
-      theatre_showtime: {
-        label: 'Theatre showtime',
-        icon: 'tabler:clock',
-        type: 'datetime',
-        hasTime: true
-      },
-      theatre_number: {
-        label: 'Theatre number',
-        icon: 'tabler:hash',
-        placeholder: '1'
-      }
-    })
-    .initialData({
+  const form = useForm({
+    defaultValues: {
+      ...createDefaultValues(schema),
       ticket_number: initialData.ticket_number || '',
-      theatre_location: {
-        name: initialData.theatre_location || '',
-        location: {
-          latitude: initialData.theatre_location_coords?.lat || 0,
-          longitude: initialData.theatre_location_coords?.lon || 0
-        },
-        formattedAddress: initialData.theatre_location || ''
-      },
+      theatre_location: initialData.theatre_location
+        ? {
+            name: initialData.theatre_location || '',
+            location: {
+              latitude: initialData.theatre_location_coords?.lat || 0,
+              longitude: initialData.theatre_location_coords?.lon || 0
+            },
+            formattedAddress: initialData.theatre_location || ''
+          }
+        : undefined,
       theatre_number: initialData.theatre_number || '',
       theatre_seat: initialData.theatre_seat || '',
       theatre_showtime: initialData.theatre_showtime
-        ? new Date(initialData.theatre_showtime)
-        : undefined
-    })
-    .onSubmit(async data => {
-      await modifyTicketMutation.mutateAsync(data)
-    })
-    .build()
+        ? dayjs(initialData.theatre_showtime).format('YYYY-MM-DDTHH:mm')
+        : ''
+    },
+    resolver: zodResolver(schema)
+  })
 
-  return <FormModal {...formProps} />
+  return (
+    <FormModal
+      form={form}
+      submissionConfig={{
+        template: type,
+        handler: modifyTicketMutation.mutateAsync
+      }}
+      uiConfig={{
+        icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
+        namespace: 'apps.movies',
+        title: `ticket.${type}`,
+        headerActions: (
+          <Button
+            dangerous
+            icon="tabler:trash"
+            variant="plain"
+            onClick={handleDeleteTicket}
+          />
+        ),
+        onClose
+      }}
+    >
+      <TextField
+        qrScanner
+        required
+        control={form.control}
+        icon="tabler:ticket"
+        label="Ticket number"
+        name="ticket_number"
+        placeholder="123456789"
+      />
+      <TextField
+        control={form.control}
+        icon="mdi:love-seat-outline"
+        label="Theatre seat"
+        name="theatre_seat"
+        placeholder="A1"
+      />
+      <LocationField
+        control={form.control}
+        label="Theatre location"
+        name="theatre_location"
+      />
+      <DateField
+        hasTime
+        control={form.control}
+        icon="tabler:clock"
+        label="Theatre showtime"
+        name="theatre_showtime"
+      />
+      <TextField
+        control={form.control}
+        icon="tabler:hash"
+        label="Theatre number"
+        name="theatre_number"
+        placeholder="1"
+      />
+    </FormModal>
+  )
 }
 
 export default ModifyTicketModal

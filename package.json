@@ -19,7 +19,13 @@
   "devDependencies": {},
   "lifeforge": {
     "icon": "tabler:movie",
-    "category": "Lifestyle"
+    "category": "Lifestyle",
+    "APIKeyAccess": {
+      "tmdb": {
+        "usage": "To fetch movie data from The Movie Database (TMDB) API",
+        "required": false
+      }
+    }
   },
   "peerDependencies": {
     "@lifeforge/api": "workspace:*",

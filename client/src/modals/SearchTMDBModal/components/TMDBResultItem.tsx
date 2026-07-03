@@ -2,7 +2,16 @@ import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 
 import { usePromiseLoading } from '@lifeforge/api'
-import { Button, Icon, toast } from '@lifeforge/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Icon,
+  Text,
+  surface,
+  toast
+} from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -33,41 +42,61 @@ function TMDBResultItem({
   )
 
   return (
-    <div className="component-bg-lighter shadow-custom flex flex-col items-center gap-6 rounded-md p-4 md:flex-row">
-      <div className="bg-bg-200 dark:bg-bg-800 relative isolate h-48 w-32 shrink-0">
+    <Card bg={surface.light} direction={{ base: 'column', md: 'row' }} gap="md">
+      <Box
+        bg={{ base: 'bg-200', dark: 'bg-800' }}
+        height="12rem"
+        overflow="hidden"
+        position="relative"
+        r="md"
+        style={{ isolation: 'isolate', width: '8rem', flexShrink: 0 }}
+      >
         <Icon
-          className="text-bg-300 dark:text-bg-700 absolute top-1/2 left-1/2 z-[-1] size-18 -translate-x-1/2 -translate-y-1/2 transform"
+          color={{ base: 'bg-300', dark: 'bg-700' }}
           icon="tabler:movie"
+          size="4.5em"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: -1
+          }}
         />
         <img
           alt=""
-          className="rounded-md object-contain"
           src={`http://image.tmdb.org/t/p/w154/${data.poster_path}`}
+          style={{ objectFit: 'contain', borderRadius: '0.375rem' }}
         />
-      </div>
-      <div className="w-full">
-        <p className="text-custom-500 font-semibold">
+      </Box>
+      <Flex direction="column" width="100%">
+        <Text color="custom-500" weight="semibold">
           {dayjs(data.release_date).year()}
-        </p>
-        <h1 className="text-xl font-semibold">
+        </Text>
+        <Text as="h1" size="xl" weight="semibold">
           {data.title}{' '}
-          <span className="text-bg-500 text-base font-medium">
+          <Text as="span" color="muted" size="base" weight="medium">
             ({data.original_title})
-          </span>
-        </h1>
-        <p className="text-bg-500 mt-2 line-clamp-2">{data.overview}</p>
-        <Button
-          className="mt-4 w-full"
-          disabled={isAdded}
-          icon="tabler:plus"
-          loading={loading}
-          variant={isAdded ? 'plain' : 'primary'}
-          onClick={onSubmit}
-        >
-          {isAdded ? 'Already in Library' : 'Add to Library'}
-        </Button>
-      </div>
-    </div>
+          </Text>
+        </Text>
+        <Text color="muted" lineClamp={2} mt="xs">
+          {data.overview}
+        </Text>
+        <Flex align="end" flex="1">
+          <Button
+            disabled={isAdded}
+            icon="tabler:plus"
+            loading={loading}
+            mt="md"
+            variant={isAdded ? 'plain' : 'primary'}
+            width="100%"
+            onClick={onSubmit}
+          >
+            {isAdded ? 'Already in Library' : 'Add to Library'}
+          </Button>
+        </Flex>
+      </Flex>
+    </Card>
   )
 }
 

@@ -1,13 +1,20 @@
 import type { MovieEntry } from '..'
+import { Grid } from '@lifeforge/ui'
+
 import MovieItem from './MovieItem'
 
 function MovieGrid({ data }: { data: MovieEntry[] }) {
   return (
-    <ul className="mb-32 grid grid-cols-[repeat(auto-fill,minmax(24rem,1fr))] gap-3 md:mb-12">
+    <Grid
+      as="ul"
+      gap="sm"
+      mb={{ base: '2xl', md: 'lg' }}
+      templateCols="repeat(auto-fill,minmax(24rem,1fr))"
+    >
       {data.map(item => (
         <MovieItem key={item.id} data={item} type="grid" />
       ))}
-    </ul>
+    </Grid>
   )
 }
 

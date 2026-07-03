@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -9,12 +8,16 @@ import type { InferOutput } from '@lifeforge/api'
 import { usePromiseLoading } from '@lifeforge/api'
 import { useModuleTranslation } from '@lifeforge/localization'
 import {
+  Box,
   Button,
   Card,
   ConfirmationModal,
   ContextMenu,
   ContextMenuItem,
+  Flex,
   Icon,
+  Text,
+  colorWithOpacity,
   toast,
   useModalStore,
   usePersonalization
@@ -41,20 +44,14 @@ function MovieItem({
   const { open } = useModalStore()
 
   const toggleWatchedMutation = useMutation(
-    forgeAPI.entries.toggleWatchStatus
-      .input({
-        id: data.id
-      })
-      .mutationOptions({
-        onSuccess: async () => {
-          await queryClient.invalidateQueries({
-            queryKey: ['movies', 'entries']
-          })
-        },
-        onError: () => {
-          toast.error('Failed to mark movie as watched.')
-        }
-      })
+    forgeAPI.entries.toggleWatchStatus.input({ id: data.id }).mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: forgeAPI.entries.key })
+      },
+      onError: () => {
+        toast.error('Failed to mark movie as watched.')
+      }
+    })
   )
 
   const [toggleWatchedLoading, handleToggleWatched] = usePromiseLoading(() =>
@@ -64,10 +61,7 @@ function MovieItem({
   const updateMovieDataMutation = useMutation(
     forgeAPI.entries.update.input({ id: data.id }).mutationOptions({
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: ['movies', 'entries']
-        })
-
+        await queryClient.invalidateQueries({ queryKey: forgeAPI.entries.key })
         toast.success('Movie data updated successfully.')
       },
       onError: () => {
@@ -81,9 +75,7 @@ function MovieItem({
   )
 
   const handleShowTicket = useCallback(() => {
-    open(ShowTicketModal, {
-      entry: data
-    })
+    open(ShowTicketModal, { entry: data })
   }, [data, open])
 
   const handleUpdateTicket = useCallback(() => {
@@ -96,7 +88,7 @@ function MovieItem({
   const deleteMutation = useMutation(
     forgeAPI.entries.remove.input({ id: data.id }).mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['movies'] })
+        queryClient.invalidateQueries({ queryKey: forgeAPI.key })
       },
       onError: () => {
         toast.error('Failed to delete movie entry')
@@ -118,105 +110,138 @@ function MovieItem({
   return (
     <Card
       as="li"
-      className={clsx(
-        'flex items-center gap-6',
-        type === 'grid' ? 'flex-col' : 'flex-col md:flex-row'
-      )}
+      direction={type === 'grid' ? 'column' : { base: 'column', md: 'row' }}
+      gap="md"
     >
-      <div className="bg-bg-200 dark:bg-bg-800 relative isolate flex h-66 w-48 shrink-0 items-center justify-center overflow-hidden rounded-md">
+      <Box
+        bg={{ base: 'bg-200', dark: colorWithOpacity('bg-800', '40%') }}
+        overflow="hidden"
+        r="md"
+        style={{
+          width: type === 'grid' ? '100%' : '12rem',
+          height: type === 'grid' ? 'auto' : '16.5rem',
+          flexShrink: 0,
+          maxHeight: '24em',
+          position: 'relative',
+          isolation: 'isolate'
+        }}
+      >
         <Icon
-          className="text-bg-300 dark:text-bg-700 absolute top-1/2 left-1/2 z-[-1] size-18 -translate-x-1/2 -translate-y-1/2 transform"
+          color={{ base: 'bg-300', dark: 'bg-700' }}
           icon="tabler:movie"
+          size="4.5em"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: -1
+          }}
         />
         <img
           alt=""
-          className="h-full w-full rounded-md object-cover"
           src={`http://image.tmdb.org/t/p/w300/${data.poster}`}
+          style={{
+            height: '100%',
+            width: '100%',
+            objectFit: 'contain',
+            borderRadius: '0.375rem'
+          }}
         />
-      </div>
-      <div className="flex w-full flex-1 flex-col">
-        <p className="text-custom-500 mb-1 font-semibold">
+      </Box>
+      <Flex direction="column" flex="1" width="100%">
+        <Text color="custom-500" mb="xs" weight="semibold">
           {dayjs(data.release_date).year()}
-        </p>
-        <h1 className="text-xl font-semibold">
+        </Text>
+        <Text as="h1" size="xl" weight="semibold">
           {data.title}
-          <span className="text-bg-500 ml-1 text-base font-medium">
+          <Text as="span" color="muted" ml="xs" size="base" weight="medium">
             ({data.original_title})
-          </span>
-        </h1>
-        <p className="text-bg-500 mt-2 line-clamp-2">{data.overview}</p>
-        <div className="mt-4 flex-1">
-          <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
-            <div className="space-y-2">
-              <div className="text-bg-500 flex items-center gap-2 font-medium">
-                <Icon className="size-5" icon="tabler:category" />
+          </Text>
+        </Text>
+        <Text color="muted" lineClamp={2} mt="xs">
+          {data.overview}
+        </Text>
+        <Flex mt="md" style={{ gap: '1rem 2rem' }} wrap="wrap">
+          <Box>
+            <Flex align="center" gap="xs" mb="xs">
+              <Icon color="muted" icon="tabler:category" />
+              <Text color="muted" weight="medium">
                 Genres
-              </div>
-              <div>{data.genres.join(', ')}</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-bg-500 flex items-center gap-2 font-medium">
-                <Icon className="size-5" icon="tabler:calendar" />
+              </Text>
+            </Flex>
+            <Text>{(data.genres as string[]).join(', ')}</Text>
+          </Box>
+          <Box>
+            <Flex align="center" gap="xs" mb="xs">
+              <Icon color="muted" icon="tabler:calendar" />
+              <Text color="muted" weight="medium">
                 Release Date
-              </div>
-              <div>
-                {data.release_date
-                  ? dayjs(data.release_date).format('DD MMM YYYY')
-                  : 'TBA'}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-bg-500 flex items-center gap-2 font-medium">
-                <Icon className="size-5" icon="tabler:clock" />
+              </Text>
+            </Flex>
+            <Text>
+              {data.release_date
+                ? dayjs(data.release_date).format('DD MMM YYYY')
+                : 'TBA'}
+            </Text>
+          </Box>
+          <Box>
+            <Flex align="center" gap="xs" mb="xs">
+              <Icon color="muted" icon="tabler:clock" />
+              <Text color="muted" weight="medium">
                 Duration
-              </div>
-              <div>
-                {dayjs
-                  .duration(data.duration, 'minutes')
-                  .format('H [h] mm [m]')}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-bg-500 flex items-center gap-2 font-medium">
-                <Icon className="size-5" icon="uil:globe" />
+              </Text>
+            </Flex>
+            <Text>
+              {dayjs.duration(data.duration, 'minutes').format('H [h] mm [m]')}
+            </Text>
+          </Box>
+          <Box>
+            <Flex align="center" gap="xs" mb="xs">
+              <Icon color="muted" icon="uil:globe" />
+              <Text color="muted" weight="medium">
                 Language
-              </div>
-              <div>{data.language}</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-bg-500 flex items-center gap-2 font-medium">
-                <Icon className="size-5" icon="tabler:flag" />
+              </Text>
+            </Flex>
+            <Text>{data.language}</Text>
+          </Box>
+          <Box>
+            <Flex align="center" gap="xs" mb="xs">
+              <Icon color="muted" icon="tabler:flag" />
+              <Text color="muted" weight="medium">
                 Countries
-              </div>
-              <div className="flex items-center gap-3">
-                {data.countries.map((country: string, index: number) => (
-                  <div
+              </Text>
+            </Flex>
+            <Flex align="center" gap="sm">
+              {(data.countries as string[]).map(
+                (country: string, index: number) => (
+                  <Flex
                     key={`country-${index}-${country}`}
-                    className="flex items-center gap-2"
+                    align="center"
+                    gap="xs"
                   >
-                    <Icon
-                      className="size-5"
-                      icon={`circle-flags:${country.toLowerCase()}`}
-                    />
-                    {country}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className={clsx(
-            'mt-6 flex gap-2',
-            type === 'grid' ? 'flex-col' : 'flex-col md:flex-row'
-          )}
+                    <Icon icon={`circle-flags:${country.toLowerCase()}`} />
+                    <Text>{country}</Text>
+                  </Flex>
+                )
+              )}
+            </Flex>
+          </Box>
+        </Flex>
+        <Flex
+          align="end"
+          direction={type === 'grid' ? 'column' : { base: 'column', md: 'row' }}
+          flex="1"
+          gap="xs"
+          justify="end"
+          mt="lg"
         >
           {!data.is_watched && (
             <Button
-              className="w-full"
               icon="tabler:check"
               loading={toggleWatchedLoading}
               variant="secondary"
+              width="100%"
               onClick={handleToggleWatched}
             >
               Mark as Watched
@@ -224,55 +249,55 @@ function MovieItem({
           )}
           {data.ticket_number && (
             <Button
-              className="w-full"
               icon="tabler:ticket"
               variant={data.is_watched ? 'secondary' : 'primary'}
+              width="100%"
               onClick={handleShowTicket}
             >
               Show Ticket
             </Button>
           )}
           {data.is_watched && (
-            <div className="flex-center text-bg-500 mt-4 mb-2 w-full gap-2">
-              <Icon className="size-5" icon="tabler:check" />
-              {t('misc.watched', {
-                date: dayjs(data.watch_date).locale(language).fromNow()
-              })}
-            </div>
+            <Flex centered color="muted" gap="sm" width="100%">
+              <Icon color="muted" icon="tabler:check" />
+              <Text color="muted">
+                {t('misc.watched', {
+                  date: dayjs(data.watch_date).locale(language).fromNow()
+                })}
+              </Text>
+            </Flex>
           )}
-        </div>
-      </div>
-      <ContextMenu
-        classNames={{
-          wrapper: 'absolute right-4 top-4'
-        }}
-      >
-        {data.is_watched && (
+        </Flex>
+      </Flex>
+      <Box position="absolute" right="1em" top="1em">
+        <ContextMenu>
+          {data.is_watched && (
+            <ContextMenuItem
+              icon="tabler:eye-off"
+              label="Mark as Unwatched"
+              onClick={handleToggleWatched}
+            />
+          )}
           <ContextMenuItem
-            icon="tabler:eye-off"
-            label="Mark as Unwatched"
-            onClick={handleToggleWatched}
+            icon="tabler:ticket"
+            label={data.ticket_number ? 'Update Ticket' : 'Add Ticket'}
+            onClick={handleUpdateTicket}
           />
-        )}
-        <ContextMenuItem
-          icon="tabler:ticket"
-          label={data.ticket_number ? 'Update Ticket' : 'Add Ticket'}
-          onClick={handleUpdateTicket}
-        />
-        <ContextMenuItem
-          icon="tabler:refresh"
-          label="Update Movie Data"
-          loading={updateMovieDataLoading}
-          shouldCloseMenuOnClick={false}
-          onClick={handleUpdateMovieData}
-        />
-        <ContextMenuItem
-          dangerous
-          icon="tabler:trash"
-          label="Delete"
-          onClick={handleDeleteTicket}
-        />
-      </ContextMenu>
+          <ContextMenuItem
+            icon="tabler:refresh"
+            label="Update Movie Data"
+            loading={updateMovieDataLoading}
+            shouldCloseMenuOnClick={false}
+            onClick={handleUpdateMovieData}
+          />
+          <ContextMenuItem
+            dangerous
+            icon="tabler:trash"
+            label="Delete"
+            onClick={handleDeleteTicket}
+          />
+        </ContextMenu>
+      </Box>
     </Card>
   )
 }

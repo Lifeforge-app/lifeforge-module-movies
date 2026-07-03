@@ -1,13 +1,15 @@
 import type { MovieEntry } from '..'
+import { Stack } from '@lifeforge/ui'
+
 import MovieItem from './MovieItem'
 
 function MovieList({ data }: { data: MovieEntry[] }) {
   return (
-    <ul className="mb-24 space-y-3 md:mb-12">
+    <Stack as="ul" gap="sm" mb={{ base: '2xl', md: 'lg' }}>
       {data.map(item => (
         <MovieItem key={item.id} data={item} type="list" />
       ))}
-    </ul>
+    </Stack>
   )
 }
 

@@ -8,9 +8,11 @@ import {
   Button,
   EmptyStateScreen,
   FAB,
+  Flex,
   ModuleHeader,
   Scrollbar,
   SearchInput,
+  Stack,
   Tabs,
   ViewModeSelector,
   WithQuery,
@@ -73,7 +75,7 @@ function Movies() {
       <ModuleHeader
         actionButton={
           <Button
-            className="hidden md:flex"
+            display={{ base: 'none', md: 'flex' }}
             icon="tabler:plus"
             tProps={{ item: t('items.movie') }}
             onClick={handleOpenTMDBModal}
@@ -82,7 +84,7 @@ function Movies() {
           </Button>
         }
       />
-      <div className="flex items-center gap-2">
+      <Flex align="center" gap="xs">
         <SearchInput
           debounceMs={300}
           searchTarget="movie"
@@ -90,21 +92,21 @@ function Movies() {
           onChange={setSearchQuery}
         />
         <ViewModeSelector
-          className="hidden md:flex"
           currentMode={viewMode}
+          display={{ base: 'none', md: 'flex' }}
           options={[
             { icon: 'uil:apps', value: 'grid' },
             { icon: 'tabler:list', value: 'list' }
           ]}
           onModeChange={setViewMode}
         />
-      </div>
+      </Flex>
       <WithQuery query={entriesQuery}>
         {data => {
           const FinalComponent = viewMode === 'grid' ? MovieGrid : MovieList
 
           return (
-            <div className="flex flex-1 flex-col space-y-3">
+            <Stack direction="column" flex="1" gap="sm">
               <Tabs
                 currentTab={currentTab}
                 enabled={['unwatched', 'watched']}
@@ -161,7 +163,7 @@ function Movies() {
                   />
                 </Scrollbar>
               )}
-            </div>
+            </Stack>
           )
         }}
       </WithQuery>

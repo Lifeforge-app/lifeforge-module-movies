@@ -1,7 +1,16 @@
-function TMDBLogo({ className }: { className?: string }) {
+import type { CSSProperties } from 'react'
+
+function TMDBLogo({
+  className,
+  style
+}: {
+  className?: string
+  style?: CSSProperties
+}) {
   return (
     <svg
       className={className}
+      style={style}
       viewBox="0 0 190.24 81.52"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"

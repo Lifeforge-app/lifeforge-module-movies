@@ -3,11 +3,15 @@ import { useState } from 'react'
 
 import type { InferOutput } from '@lifeforge/api'
 import {
+  Box,
   Button,
   EmptyStateScreen,
+  Flex,
   ModalHeader,
   SearchInput,
+  Text,
   WithQuery,
+  surface,
   toast
 } from '@lifeforge/ui'
 
@@ -37,7 +41,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
 
   const onAddToLibrary = async () => {
     await queryClient.invalidateQueries({
-      queryKey: ['movies', 'entries']
+      queryKey: forgeAPI.entries.key
     })
 
     await queryClient.invalidateQueries({
@@ -51,28 +55,36 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="min-w-[70vw]">
+    <Box minWidth="70vw">
       <ModalHeader
         appendTitle={
-          <p className="text-bg-500 shrink-0 text-right text-sm sm:text-base">
+          <Text
+            as="p"
+            color="muted"
+            display={{ base: 'block', sm: 'inline' }}
+            style={{ flexShrink: 0, textAlign: 'right' }}
+          >
             powered by&nbsp;
-            <a
-              className="underline"
+            <Text
+              as="a"
+              decoration="underline"
               href="https://iconify.design"
               rel="noreferrer"
               target="_blank"
             >
-              <TMDBLogo className="ml-2 inline h-4" />
-            </a>
-          </p>
+              <Box asChild display="inline" height="1rem">
+                <TMDBLogo />
+              </Box>
+            </Text>
+          </Text>
         }
         icon="tabler:movie"
         title="Search TMDB"
         onClose={onClose}
       />
-      <div className="flex flex-col items-center gap-2 sm:flex-row">
+      <Flex align="center" direction={{ base: 'column', sm: 'row' }} gap="xs">
         <SearchInput
-          className="component-bg-lighter-with-hover"
+          bg={surface.lightInteractive}
           searchTarget="movie"
           value={searchQuery}
           onChange={setSearchQuery}
@@ -86,11 +98,11 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
           }}
         />
         <Button
-          className="w-full sm:w-auto"
           disabled={searchQuery.trim() === ''}
           icon="tabler:arrow-right"
           iconPosition="end"
           loading={searchResultsQuery.isLoading}
+          width={{ base: '100%', sm: 'auto' }}
           onClick={() => {
             setPage(1)
             setQueryToSearch(searchQuery.trim())
@@ -98,8 +110,8 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
         >
           search
         </Button>
-      </div>
-      <div className="mt-6">
+      </Flex>
+      <Box mt="lg">
         {queryToSearch ? (
           <WithQuery query={searchResultsQuery}>
             {searchResults => (
@@ -112,17 +124,21 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
             )}
           </WithQuery>
         ) : (
-          <div className="h-96">
+          <Box height="24rem">
             <EmptyStateScreen
-              icon={<TMDBLogo className="h-24" />}
+              icon={
+                <Box asChild height="6rem">
+                  <TMDBLogo />
+                </Box>
+              }
               message={{
                 id: 'tmdb'
               }}
             />
-          </div>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }
 

@@ -1,4 +1,4 @@
-import { EmptyStateScreen, Pagination } from '@lifeforge/ui'
+import { Box, EmptyStateScreen, Pagination, Stack } from '@lifeforge/ui'
 
 import type { TMDBSearchResults } from '..'
 import TMDBResultItem from './TMDBResultItem'
@@ -20,26 +20,27 @@ function TMDBResultsList({
 
   if (results.total_results === 0) {
     return (
-      <div className="mt-6 h-96">
+      <Box height="24rem" mt="lg">
         <EmptyStateScreen
           icon="tabler:search-off"
           message={{
             id: 'search'
           }}
         />
-      </div>
+      </Box>
     )
   }
 
   return (
     <>
       <Pagination
-        className="mt-6 mb-4"
+        mb="md"
+        mt="lg"
         page={page}
         totalPages={results.total_pages}
         onPageChange={setPage}
       />
-      <div className="mt-6 w-full space-y-2">
+      <Stack gap="xs" mt="lg">
         {results.results.map(entry => (
           <TMDBResultItem
             key={entry.id}
@@ -48,9 +49,9 @@ function TMDBResultsList({
             onAddToLibrary={onAddToLibrary}
           />
         ))}
-      </div>
+      </Stack>
       <Pagination
-        className="mt-4"
+        mt="md"
         page={page}
         totalPages={results.total_pages}
         onPageChange={setPage}
