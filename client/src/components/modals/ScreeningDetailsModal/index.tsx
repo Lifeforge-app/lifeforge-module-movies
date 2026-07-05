@@ -1,30 +1,38 @@
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
 import { useMemo, useState } from 'react'
 
 import {
   Box,
+  Button,
+  Card,
   DateInput,
   Flex,
+  Icon,
   ListboxInput,
   ListboxOption,
   ModalHeader,
   Stack,
   TAILWIND_PALETTE,
   Text,
-  WithQuery
+  WithQuery,
+  surface
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
 import SeatMap from './components/SeatMap'
+import type { TGVMovie } from '../TGVListModal/components/TGVMovieItem';
+
+dayjs.extend(duration)
 
 function ScreeningDetailsModal({
   onClose,
-  data: { movieId }
+  data: { movieId, movie }
 }: {
   onClose: () => void
-  data: { movieId: string }
+  data: { movieId: string; movie: TGVMovie }
 }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedArea, setSelectedArea] = useState('all')
@@ -114,6 +122,50 @@ function ScreeningDetailsModal({
         onClose={onClose}
       />
       <Stack gap="sm" mt="lg">
+        <Card bg={surface.light} direction="row" gap="md">
+          <Box
+            flexShrink="0"
+            height="5rem"
+            overflow="hidden"
+            r="md"
+            width="3.5rem"
+          >
+            <img
+              alt=""
+              src={movie.poster}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </Box>
+          <Flex direction="column" justify="center">
+            <Text size="lg" weight="semibold">
+              {movie.name}
+            </Text>
+            <Flex gapX="md" gapY="sm" mt="xs" wrap="wrap">
+              <Flex align="center" gap="xs">
+                <Icon color="muted" icon="tabler:category" size="1em" />
+                <Text color="muted" size="sm">
+                  {movie.genres.join(', ')}
+                </Text>
+              </Flex>
+              {movie.duration > 0 && (
+                <Flex align="center" gap="xs">
+                  <Icon color="muted" icon="tabler:clock" size="1em" />
+                  <Text color="muted" size="sm">
+                    {dayjs
+                      .duration(movie.duration, 'minutes')
+                      .format('H [h] mm [m]')}
+                  </Text>
+                </Flex>
+              )}
+              <Flex align="center" gap="xs">
+                <Icon color="muted" icon="uil:globe" size="1em" />
+                <Text color="muted" size="sm">
+                  {movie.language}
+                </Text>
+              </Flex>
+            </Flex>
+          </Flex>
+        </Card>
         <WithQuery query={datesQuery}>
           {() => (
             <DateInput
@@ -122,7 +174,13 @@ function ScreeningDetailsModal({
               label="Date"
               startDate={dateBounds?.startDate}
               value={selectedDate}
-              onChange={setSelectedDate}
+              onChange={date => {
+                setSelectedDate(date)
+                setSelectedArea('all')
+                setSelectedCinema('')
+                setSelectedExperience('')
+                setSelectedSession('')
+              }}
             />
           )}
         </WithQuery>
@@ -313,6 +371,20 @@ function ScreeningDetailsModal({
             {seatPlanData => <SeatMap data={seatPlanData} />}
           </WithQuery>
         </Box>
+      )}
+      {selectedSession && selectedCinema && selectedDate && (
+        <Button
+          as="a"
+          href={`https://www.tgv.com.my/ticketing-journey/select-seats/${movie.itemkey}/${dayjs(selectedDate).format('YYYY-MM-DD')}/${selectedCinema}/${selectedSession}`}
+          icon="tabler:ticket"
+          mt="lg"
+          referrerPolicy="no-referrer"
+          target="_blank"
+          variant="primary"
+          width="100%"
+        >
+          Buy Ticket
+        </Button>
       )}
     </Box>
   )

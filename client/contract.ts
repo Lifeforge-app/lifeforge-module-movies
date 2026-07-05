@@ -1095,10 +1095,10 @@ export const contract = {
               "items": {
                 "type": "object",
                 "properties": {
-                  "recid": {
+                  "itemkey": {
                     "type": "string"
                   },
-                  "itemkey": {
+                  "recid": {
                     "type": "string"
                   },
                   "name": {
@@ -1127,8 +1127,8 @@ export const contract = {
                   }
                 },
                 "required": [
-                  "recid",
                   "itemkey",
+                  "recid",
                   "name",
                   "poster",
                   "genres",

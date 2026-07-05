@@ -49,6 +49,7 @@
     "showTicket": "显示票据",
     "addToCalendar": "添加到日历",
     "addedToCalendar": "已添加到日历",
+    "buyTicket": "购买票券",
     "updateMovieData": "更新电影数据",
     "importFromTgv": "从 TGV 导入",
     "fromTmdb": "从 TMDB 添加",

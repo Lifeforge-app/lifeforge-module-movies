@@ -6,11 +6,13 @@ import { LocationSchema } from '@lifeforge/server-utils'
 import forge from '../forge'
 import schema from '../schema'
 import type { TGVBooking } from '../types/tgvBooking.type'
+import type { TGVCinema } from '../types/tgvCinema.type'
 import type { TGVExperienceAssets } from '../types/tgvExperienceAssets.type'
 import type { TGVListing } from '../types/tgvListing.type'
 import type { TGVMovieSession } from '../types/tgvMovieSession.type'
 import type { TGVSeatPlan } from '../types/tgvSeatPlan.type'
 import type { TGVSeatStatus } from '../types/tgvSeatStatus.type'
+import type { TGVStates } from '../types/tgvStateData.type'
 
 const stripHtml = (html: string) =>
   new JSDOM(html).window.document.body.textContent?.trim() ?? ''
@@ -37,8 +39,8 @@ const tgvLogin = async (email: string, pin: string) => {
 const TGVResponseSchema = z.object({
   movies: z.array(
     z.object({
-      recid: z.string(),
       itemkey: z.string(),
+      recid: z.string(),
       name: z.string(),
       poster: z.string(),
       genres: z.array(z.string()),
@@ -81,8 +83,8 @@ export const list = forge
         const posterAsset = movie.assets?.find(a => a.assetkey === 'poster')
 
         return {
-          recid: movie.recid,
           itemkey: movie.itemkey,
+          recid: movie.recid,
           name: movie.name,
           poster: posterAsset?.extdata?.fileinfo?.fileurl ?? '',
           genres: movie.extdata?.movieinfo?.genre ?? [],
@@ -323,28 +325,28 @@ export const getMovieCinemas = forge
       return response.badRequest('Failed to fetch cinemas')
     }
 
-    const stateData = await stateRes.json()
-    const movieData = await movieRes.json()
+    const stateData: TGVStates = await stateRes.json()
+    const movieData: TGVCinema = await movieRes.json()
 
     const screeningIds = new Set(
-      movieData.results.locations.flatMap((loc: any) =>
-        loc.cinemaids.map((c: any) => c.cinemaid as string)
+      movieData.results.locations.flatMap(loc =>
+        loc.cinemaids.map(c => c.cinemaid as string)
       )
     )
 
     return response.ok(
       stateData.results
-        .map((s: any) => ({
+        .map(s => ({
           state: s.value,
           label: s.label,
           cinemas: s.cinemas
-            .filter((c: any) => screeningIds.has(c.cinemaid))
-            .map((c: any) => ({
+            .filter(c => screeningIds.has(c.cinemaid))
+            .map(c => ({
               id: c.cinemaid,
               name: c.name
             }))
         }))
-        .filter((s: any) => s.cinemas.length > 0)
+        .filter(s => s.cinemas.length > 0)
     )
   })
 
@@ -561,7 +563,7 @@ export const getSeatPlan = forge
     return response.ok({
       areas: layout.areas.map(area => ({
         rows: area.rows.map(row => ({
-          physicalName: row.physicalName || "",
+          physicalName: row.physicalName || '',
           seats: row.seats.map(seat => ({
             columnIndex: seat.position.columnIndex,
             status: seat.status,

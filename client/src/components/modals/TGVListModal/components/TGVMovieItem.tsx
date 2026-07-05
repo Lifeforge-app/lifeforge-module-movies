@@ -127,7 +127,7 @@ function TGVMovieItem({
               icon="tabler:movie"
               variant="secondary"
               width="100%"
-              onClick={() => open(ScreeningDetailsModal, { movieId: data.recid })}
+              onClick={() => open(ScreeningDetailsModal, { movieId: data.recid, movie: data })}
             >
               Screening Details
             </Button>
