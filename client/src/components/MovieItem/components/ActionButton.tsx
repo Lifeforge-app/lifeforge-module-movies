@@ -45,6 +45,7 @@ function ActionButton() {
     >
       {!data.is_watched && (
         <Button
+          flex={type === 'grid' ? 'none' : { base: 'none', md: '1' }}
           icon="tabler:check"
           variant="secondary"
           width="100%"
@@ -55,6 +56,7 @@ function ActionButton() {
       )}
       {data.ticket_number && (
         <Button
+          flex={type === 'grid' ? 'none' : { base: 'none', md: '1' }}
           icon="tabler:ticket"
           variant={data.is_watched ? 'secondary' : 'primary'}
           width="100%"
@@ -64,7 +66,15 @@ function ActionButton() {
         </Button>
       )}
       {data.is_watched && (
-        <Flex centered color="muted" gap="sm" width="100%">
+        <Flex
+          centered
+          color="muted"
+          flex={type === 'grid' ? 'none' : { base: 'none', md: '1' }}
+          gap="sm"
+          mt={type === 'grid' ? 'md' : { base: 'md', md: 'none' }}
+          py="md"
+          width="100%"
+        >
           <Icon color="muted" icon="tabler:check" />
           <Text color="muted">
             {t('misc.watched', {

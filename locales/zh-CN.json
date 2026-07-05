@@ -5,6 +5,12 @@
     "movie": "电影"
   },
   "modals": {
+    "browseTgv": {
+      "title": "浏览 TGV"
+    },
+    "importFromTgv": {
+      "title": "从 TGV 导入"
+    },
     "searchTmdb": {
       "title": "搜索电影"
     },
@@ -31,6 +37,7 @@
   "buttons": {
     "addToLibrary": "加入影片库",
     "alreadyInLibrary": "已在影片库",
+    "linkToLibrary": "链接到影片库",
     "addTicket": "新增票券",
     "updateTicket": "更新票券",
     "markAsWatched": "标记为已观看",
@@ -39,9 +46,14 @@
     "showTicket": "显示票据",
     "addToCalendar": "添加到日历",
     "addedToCalendar": "已添加到日历",
-    "updateMovieData": "更新电影数据"
+    "updateMovieData": "更新电影数据",
+    "importFromTgv": "从 TGV 导入",
+    "fromTmdb": "从 TMDB 添加",
+    "fromTgv": "从 TGV 添加"
   },
   "inputs": {
+    "email": "邮箱",
+    "pin": "PIN",
     "ticketNumber": "票券号码",
     "theatreSeat": "影院座位",
     "theatreLocation": "影院地点",
@@ -50,8 +62,17 @@
     "category": "类别"
   },
   "tabs": {
+    "nowShowing": "正在热映",
+    "comingSoon": "即将上映",
     "watched": "已观看",
     "unwatched": "未观看"
+  },
+  "metadata": {
+    "genres": "类型",
+    "releaseDate": "上映日期",
+    "duration": "时长",
+    "language": "语言",
+    "dataSource": "数据来源"
   },
   "misc": {
     "watched": "观看于{{date}}"

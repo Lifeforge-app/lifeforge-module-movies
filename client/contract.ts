@@ -20,6 +20,16 @@ export const contract = {
             "id"
           ],
           "additionalProperties": false
+        },
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "tgvId": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "output": {
@@ -29,6 +39,9 @@ export const contract = {
           "properties": {
             "tmdb_id": {
               "type": "number"
+            },
+            "tgv_id": {
+              "type": "string"
             },
             "title": {
               "type": "string"
@@ -101,6 +114,7 @@ export const contract = {
           },
           "required": [
             "tmdb_id",
+            "tgv_id",
             "title",
             "original_title",
             "poster",
@@ -142,7 +156,6 @@ export const contract = {
           "type": "object",
           "properties": {
             "watched": {
-              "default": "false",
               "type": "string",
               "enum": [
                 "true",
@@ -150,9 +163,6 @@ export const contract = {
               ]
             }
           },
-          "required": [
-            "watched"
-          ],
           "additionalProperties": false
         }
       },
@@ -171,6 +181,9 @@ export const contract = {
                 "properties": {
                   "tmdb_id": {
                     "type": "number"
+                  },
+                  "tgv_id": {
+                    "type": "string"
                   },
                   "title": {
                     "type": "string"
@@ -243,6 +256,7 @@ export const contract = {
                 },
                 "required": [
                   "tmdb_id",
+                  "tgv_id",
                   "title",
                   "original_title",
                   "poster",
@@ -332,6 +346,9 @@ export const contract = {
             "tmdb_id": {
               "type": "number"
             },
+            "tgv_id": {
+              "type": "string"
+            },
             "title": {
               "type": "string"
             },
@@ -403,6 +420,7 @@ export const contract = {
           },
           "required": [
             "tmdb_id",
+            "tgv_id",
             "title",
             "original_title",
             "poster",
@@ -458,6 +476,9 @@ export const contract = {
             "tmdb_id": {
               "type": "number"
             },
+            "tgv_id": {
+              "type": "string"
+            },
             "title": {
               "type": "string"
             },
@@ -529,6 +550,7 @@ export const contract = {
           },
           "required": [
             "tmdb_id",
+            "tgv_id",
             "title",
             "original_title",
             "poster",
@@ -556,6 +578,212 @@ export const contract = {
           "type": "string"
         },
         "NOT_FOUND": true
+      }
+    }
+  },
+  "tgv": {
+    "fetchTicket": {
+      "method": "post",
+      "description": "Fetch TGV booking ticket by movie recid",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "body": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "pin": {
+              "type": "string"
+            },
+            "tgvId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tgvId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "theatre_location": {
+                  "type": "string"
+                },
+                "theatre_number": {
+                  "type": "string"
+                },
+                "theatre_seat": {
+                  "type": "string"
+                },
+                "theatre_showtime": {
+                  "type": "string"
+                },
+                "ticket_number": {
+                  "type": "string"
+                },
+                "theatre_location_coords": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "latitude": {
+                          "type": "number"
+                        },
+                        "longitude": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "latitude",
+                        "longitude"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "theatre_location",
+                "theatre_number",
+                "theatre_seat",
+                "theatre_showtime",
+                "ticket_number",
+                "theatre_location_coords"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ]
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
+    "hasCachedSession": {
+      "method": "get",
+      "description": "Check if TGV session is cached and valid",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {},
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "boolean"
+        }
+      }
+    },
+    "list": {
+      "method": "get",
+      "description": "Fetch movies from TGV Cinemas by type",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "nowShowing",
+                "comingSoon"
+              ]
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "movies": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "recid": {
+                    "type": "string"
+                  },
+                  "itemkey": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "poster": {
+                    "type": "string"
+                  },
+                  "genres": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "duration": {
+                    "type": "number"
+                  },
+                  "overview": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "release_date": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "recid",
+                  "itemkey",
+                  "name",
+                  "poster",
+                  "genres",
+                  "duration",
+                  "overview",
+                  "language",
+                  "release_date"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "movies"
+          ],
+          "additionalProperties": false
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
       }
     }
   },
@@ -674,6 +902,9 @@ export const contract = {
             "tmdb_id": {
               "type": "number"
             },
+            "tgv_id": {
+              "type": "string"
+            },
             "title": {
               "type": "string"
             },
@@ -745,6 +976,7 @@ export const contract = {
           },
           "required": [
             "tmdb_id",
+            "tgv_id",
             "title",
             "original_title",
             "poster",

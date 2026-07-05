@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import z from 'zod'
 
 import { LocationSchema } from '@lifeforge/server-utils'
@@ -34,6 +35,7 @@ export const update = forge
   .callback(async ({ pb, query: { id }, body, response }) => {
     const finalData = {
       ...body,
+      theatre_showtime: dayjs(body.theatre_showtime),
       theatre_location: body.theatre_location?.name,
       theatre_location_coords: {
         lat: body.theatre_location?.location.latitude || 0,

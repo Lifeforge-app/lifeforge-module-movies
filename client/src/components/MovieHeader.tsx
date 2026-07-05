@@ -1,14 +1,6 @@
-import { useModuleTranslation } from '@lifeforge/localization'
-import {
-  Button,
-  Flex,
-  ModuleHeader,
-  SearchInput,
-  ViewModeSelector,
-  useModalStore
-} from '@lifeforge/ui'
+import { Flex, ModuleHeader, SearchInput, ViewModeSelector } from '@lifeforge/ui'
 
-import SearchTMDBModal from './modals/SearchTMDBModal'
+import MovieCreationMenu from './MovieCreationMenu'
 
 function MovieHeader({
   searchQuery,
@@ -21,23 +13,9 @@ function MovieHeader({
   onSearchChange: (value: string) => void
   onViewModeChange: (mode: 'grid' | 'list') => void
 }) {
-  const { open } = useModalStore()
-  const { t } = useModuleTranslation()
-
   return (
     <>
-      <ModuleHeader
-        actionButton={
-          <Button
-            display={{ base: 'none', md: 'flex' }}
-            icon="tabler:plus"
-            tProps={{ item: t('items.movie') }}
-            onClick={() => open(SearchTMDBModal, {})}
-          >
-            new
-          </Button>
-        }
-      />
+      <ModuleHeader actionButton={<MovieCreationMenu variant="desktop" />} />
       <Flex align="center" as="header" gap="xs">
         <SearchInput
           debounceMs={300}
@@ -55,6 +33,7 @@ function MovieHeader({
           onModeChange={onViewModeChange}
         />
       </Flex>
+      <MovieCreationMenu variant="mobile" />
     </>
   )
 }

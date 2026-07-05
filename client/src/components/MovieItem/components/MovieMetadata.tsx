@@ -3,6 +3,7 @@ import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { getLangNameFromCode } from 'language-name-map'
 
+import { useModuleTranslation } from '@lifeforge/localization'
 import { Box, Flex, Icon, Text } from '@lifeforge/ui'
 
 import { useMovieItemContext } from '../contexts/MovieItemContext'
@@ -12,34 +13,42 @@ dayjs.extend(relativeTime)
 
 function MovieMetadata() {
   const { data } = useMovieItemContext()
+  const { t } = useModuleTranslation()
 
   const metadataItems = [
     {
       icon: 'tabler:category',
-      label: 'Genres',
+      label: 'genres',
       value: (data.genres as string[]).join(', ')
     },
     {
       icon: 'tabler:calendar',
-      label: 'Release Date',
+      label: 'releaseDate',
       value: data.release_date
         ? dayjs(data.release_date).format('DD MMM YYYY')
         : 'TBA'
     },
     {
       icon: 'tabler:clock',
-      label: 'Duration',
+      label: 'duration',
       value: dayjs.duration(data.duration, 'minutes').format('H [h] mm [m]')
     },
     {
       icon: 'uil:globe',
-      label: 'Language',
+      label: 'language',
       value:
         data.language
           .split(',')
           .map(e => getLangNameFromCode(e.trim())?.name || '')
           .filter(Boolean)
           .join(', ') || data.language
+    },
+    {
+      icon: 'tabler:database',
+      label: 'dataSource',
+      value: [data.tmdb_id !== -1 && 'TMDB', data.tgv_id && 'TGV']
+        .filter(Boolean)
+        .join(', ')
     }
   ]
 
@@ -63,7 +72,7 @@ function MovieMetadata() {
             <Flex align="center" gap="xs" mb="xs">
               <Icon color="muted" icon={icon} />
               <Text color="muted" weight="medium">
-                {label}
+                {t(`metadata.${label}`)}
               </Text>
             </Flex>
             <Text>{value}</Text>

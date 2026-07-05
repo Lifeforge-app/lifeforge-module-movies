@@ -20,27 +20,33 @@ import type { TMDBSearchResults } from '..'
 function TMDBResultItem({
   data,
   isAdded,
+  tgvId,
   onAddToLibrary
 }: {
   data: TMDBSearchResults['results'][number]
   isAdded: boolean
+  tgvId?: string
   onAddToLibrary: () => Promise<void>
 }) {
   const addToLibraryMutation = useMutation(
-    forgeAPI.entries.create.input({ id: data.id.toString() }).mutationOptions({
-      onSuccess: async () => {
-        await onAddToLibrary()
-      },
-      onError: (error: unknown) => {
-        toast.error(
-          `Failed to add movie: ${(error as Error).message || 'Unknown error'}`
-        )
-      }
-    })
+    forgeAPI.entries.create
+      .input({
+        id: data.id.toString()
+      })
+      .mutationOptions({
+        onSuccess: async () => {
+          await onAddToLibrary()
+        },
+        onError: (error: unknown) => {
+          toast.error(
+            `Failed to add movie: ${(error as Error).message || 'Unknown error'}`
+          )
+        }
+      })
   )
 
   const [loading, onSubmit] = usePromiseLoading(() =>
-    addToLibraryMutation.mutateAsync(undefined)
+    addToLibraryMutation.mutateAsync({ tgvId })
   )
 
   return (
@@ -86,15 +92,19 @@ function TMDBResultItem({
         </Text>
         <Flex align="end" flex="1">
           <Button
-            disabled={isAdded}
-            icon="tabler:plus"
+            disabled={tgvId ? false : isAdded}
+            icon={tgvId ? 'tabler:link' : 'tabler:plus'}
             loading={loading}
             mt="md"
-            variant={isAdded ? 'plain' : 'primary'}
+            variant={tgvId ? 'primary' : isAdded ? 'plain' : 'primary'}
             width="100%"
             onClick={onSubmit}
           >
-            {isAdded ? 'Already in Library' : 'Add to Library'}
+            {tgvId
+              ? 'Link to Library'
+              : isAdded
+                ? 'Already in Library'
+                : 'Add to Library'}
           </Button>
         </Flex>
       </Flex>

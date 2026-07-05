@@ -7,11 +7,13 @@ function TMDBResultsList({
   results,
   page,
   setPage,
+  tgvId,
   onAddToLibrary
 }: {
   results: TMDBSearchResults
   page: number
   setPage: React.Dispatch<React.SetStateAction<number>>
+  tgvId?: string
   onAddToLibrary: () => Promise<void>
 }) {
   if (results === null) {
@@ -46,6 +48,7 @@ function TMDBResultsList({
             key={entry.id}
             data={entry}
             isAdded={entry.existed}
+            tgvId={tgvId}
             onAddToLibrary={onAddToLibrary}
           />
         ))}

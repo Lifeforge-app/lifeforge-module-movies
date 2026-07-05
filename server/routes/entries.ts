@@ -8,7 +8,7 @@ export const list = forge
     description: 'Get all movie entries',
     input: {
       query: z.object({
-        watched: z.enum(['true', 'false']).optional().default('false')
+        watched: z.enum(['true', 'false']).optional()
       })
     },
     output: {
@@ -23,13 +23,17 @@ export const list = forge
 
     const entries = await pb.getFullList
       .collection('entries')
-      .filter([
-        {
-          field: 'is_watched',
-          operator: '=',
-          value: parsedWatched
-        }
-      ])
+      .filter(
+        watched !== undefined
+          ? [
+              {
+                field: 'is_watched',
+                operator: '=',
+                value: parsedWatched
+              }
+            ]
+          : []
+      )
       .execute()
 
     const total = (
@@ -41,6 +45,12 @@ export const list = forge
       entries: entries.sort((a, b) => {
         if (a.is_watched !== b.is_watched) {
           return a.is_watched ? 1 : -1
+        }
+
+        if (a.is_watched && b.is_watched && a.watch_date && b.watch_date) {
+          return (
+            new Date(b.watch_date).getTime() - new Date(a.watch_date).getTime()
+          )
         }
 
         if (
@@ -68,7 +78,12 @@ export const create = forge
     input: {
       query: z.object({
         id: z.string()
-      })
+      }),
+      body: z
+        .object({
+          tgvId: z.string().optional()
+        })
+        .optional()
     },
     output: {
       CREATED: movieSchemas.entries,
@@ -79,6 +94,7 @@ export const create = forge
     async ({
       pb,
       query: { id },
+      body,
       core: {
         api: { getAPIKey }
       },
@@ -105,6 +121,16 @@ export const create = forge
         .catch(() => null)
 
       if (initialData) {
+        if (body?.tgvId) {
+          return response.created(
+            await pb.update
+              .collection('entries')
+              .id(initialData.id)
+              .data({ tgv_id: body.tgvId })
+              .execute()
+          )
+        }
+
         return response.badRequest('Entry already exists')
       }
 
@@ -125,6 +151,7 @@ export const create = forge
 
       const entryData = {
         tmdb_id: tmdbData.id,
+        tgv_id: body?.tgvId ?? '',
         title: tmdbData.title,
         original_title: tmdbData.original_title,
         poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,

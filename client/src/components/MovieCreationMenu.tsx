@@ -1,0 +1,70 @@
+import { useModuleTranslation } from '@lifeforge/localization'
+import {
+  Button,
+  ContextMenu,
+  ContextMenuItem,
+  FAB,
+  useModalStore
+} from '@lifeforge/ui'
+
+import SearchTMDBModal from './modals/SearchTMDBModal'
+import TGVListModal from './modals/TGVListModal'
+
+function MovieCreationMenu({ variant }: { variant: 'desktop' | 'mobile' }) {
+  const { open } = useModalStore()
+  const { t } = useModuleTranslation()
+
+  const items = (
+    <>
+      <ContextMenuItem
+        icon="selfhst:tmdb"
+        label="fromTmdb"
+        onClick={() => open(SearchTMDBModal, {})}
+      />
+      <ContextMenuItem
+        icon="tabler:ticket"
+        label="fromTgv"
+        onClick={() => open(TGVListModal, {})}
+      />
+    </>
+  )
+
+  if (variant === 'desktop') {
+    return (
+      <ContextMenu
+        buttonComponent={
+          <Button
+            display={{ base: 'none', md: 'flex' }}
+            icon="tabler:plus"
+            tProps={{ item: t('items.movie') }}
+          >
+            new
+          </Button>
+        }
+      >
+        {items}
+      </ContextMenu>
+    )
+  }
+
+  return (
+    <ContextMenu
+      buttonComponent={<FAB position="static" visibilityBreakpoint="md" />}
+      styles={{
+        menu: { minWidth: '18em' },
+        button: { position: 'static' },
+        wrapper: {
+          position: 'fixed',
+          zIndex: 10,
+          right: '1.5rem',
+          bottom: '1.5rem',
+          width: 'min-content'
+        }
+      }}
+    >
+      {items}
+    </ContextMenu>
+  )
+}
+
+export default MovieCreationMenu

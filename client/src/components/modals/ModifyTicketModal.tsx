@@ -19,6 +19,7 @@ import {
 import { forgeAPI } from '@/manifest'
 
 import type { MovieEntry } from '../..'
+import TGVLoginModal, { type TGVImportedTicketData } from './TGVLoginModal'
 
 const schema = z.object({
   ticket_number: z.string().min(1, 'Required'),
@@ -80,6 +81,24 @@ function ModifyTicketModal({
       })
   )
 
+  const handleTicketImport = (ticketData: TGVImportedTicketData) => {
+    form.setValue('ticket_number', ticketData.ticket_number)
+    form.setValue('theatre_seat', ticketData.theatre_seat)
+    form.setValue(
+      'theatre_showtime',
+      dayjs(ticketData.theatre_showtime).format('YYYY-MM-DDTHH:mm')
+    )
+    form.setValue('theatre_number', ticketData.theatre_number)
+    form.setValue('theatre_location', {
+      name: ticketData.theatre_location,
+      location: ticketData.theatre_location_coords || {
+        latitude: 0,
+        longitude: 0
+      },
+      formattedAddress: ticketData.theatre_location
+    })
+  }
+
   const handleDeleteTicket = () =>
     open(ConfirmationModal, {
       title: 'Delete Ticket',
@@ -124,7 +143,7 @@ function ModifyTicketModal({
         icon: type === 'create' ? 'tabler:plus' : 'tabler:pencil',
         namespace: 'apps.movies',
         title: `ticket.${type}`,
-        headerActions: (
+        headerActions: initialData.ticket_number && (
           <Button
             dangerous
             icon="tabler:trash"
@@ -170,6 +189,23 @@ function ModifyTicketModal({
         name="theatre_number"
         placeholder="1"
       />
+      {initialData.tgv_id && (
+        <Button
+          icon="tabler:cloud-download"
+          mt="md"
+          namespace="apps.movies"
+          variant="secondary"
+          width="100%"
+          onClick={() =>
+            open(TGVLoginModal, {
+              tgvId: initialData.tgv_id,
+              onImport: handleTicketImport
+            })
+          }
+        >
+          importFromTgv
+        </Button>
+      )}
     </FormModal>
   )
 }

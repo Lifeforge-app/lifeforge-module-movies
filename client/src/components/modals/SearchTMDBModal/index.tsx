@@ -22,10 +22,19 @@ import TMDBResultsList from './components/TMDBResultsList'
 
 export type TMDBSearchResults = InferOutput<typeof forgeAPI.tmdb.search>
 
-function SearchTMDBModal({ onClose }: { onClose: () => void }) {
+function SearchTMDBModal({
+  onClose,
+  data: { searchQuery: initialQuery = '', tgvId }
+}: {
+  onClose: () => void
+  data: {
+    searchQuery?: string
+    tgvId?: string
+  }
+}) {
   const queryClient = useQueryClient()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [queryToSearch, setQueryToSearch] = useState('')
+  const [searchQuery, setSearchQuery] = useState(initialQuery)
+  const [queryToSearch, setQueryToSearch] = useState(initialQuery)
   const [page, setPage] = useState(1)
 
   const searchResultsQuery = useQuery(
@@ -50,6 +59,8 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
         page: page.toString()
       }).key
     })
+
+    if (tgvId) onClose()
 
     toast.success('Movie added to your library!')
   }
@@ -119,6 +130,7 @@ function SearchTMDBModal({ onClose }: { onClose: () => void }) {
                 page={page}
                 results={searchResults}
                 setPage={setPage}
+                tgvId={tgvId}
                 onAddToLibrary={onAddToLibrary}
               />
             )}

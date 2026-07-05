@@ -5,6 +5,12 @@
     "movie": "Filem"
   },
   "modals": {
+    "browseTgv": {
+      "title": "Layari TGV"
+    },
+    "importFromTgv": {
+      "title": "Import dari TGV"
+    },
     "searchTmdb": {
       "title": "Cari Filem"
     },
@@ -31,6 +37,7 @@
   "buttons": {
     "addToLibrary": "Tambah ke Pustaka",
     "alreadyInLibrary": "Sudah di dalam Pustaka",
+    "linkToLibrary": "Pautkan ke Pustaka",
     "addTicket": "Tambah Tiket",
     "updateTicket": "Kemaskini Tiket",
     "markAsWatched": "Tandakan sebagai Ditonton",
@@ -39,9 +46,14 @@
     "showTicket": "Tunjukkan Tiket",
     "addToCalendar": "Tambah ke Kalendar",
     "addedToCalendar": "Ditambahkan ke Kalendar",
-    "updateMovieData": "Kemas Kini Data Filem"
+    "updateMovieData": "Kemas Kini Data Filem",
+    "importFromTgv": "Import dari TGV",
+    "fromTmdb": "Dari TMDB",
+    "fromTgv": "Dari TGV"
   },
   "inputs": {
+    "email": "Emel",
+    "pin": "PIN",
     "ticketNumber": "Nombor Tiket",
     "theatreSeat": "Tempat Duduk Pawagam",
     "theatreLocation": "Lokasi Pawagam",
@@ -50,8 +62,17 @@
     "category": "Kategori"
   },
   "tabs": {
+    "nowShowing": "Sedang Ditayangkan",
+    "comingSoon": "Akan Datang",
     "watched": "Ditonton",
     "unwatched": "Belum ditonton"
+  },
+  "metadata": {
+    "genres": "Genre",
+    "releaseDate": "Tarikh Tayangan",
+    "duration": "Tempoh",
+    "language": "Bahasa",
+    "dataSource": "Sumber Data"
   },
   "misc": {
     "watched": "Ditonton pada {{date}}"

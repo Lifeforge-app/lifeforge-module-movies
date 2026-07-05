@@ -5,6 +5,7 @@ export const schemas = {
   entries: {
     schema: z.object({
       tmdb_id: z.number(),
+      tgv_id: z.string(),
       title: z.string(),
       original_title: z.string(),
       poster: z.string(),
@@ -54,6 +55,19 @@ export const schemas = {
           required: false,
           system: false,
           type: 'number'
+        },
+        {
+          autogeneratePattern: '',
+          hidden: false,
+          max: 0,
+          min: 0,
+          name: 'tgv_id',
+          pattern: '',
+          presentable: false,
+          primaryKey: false,
+          required: false,
+          system: false,
+          type: 'text'
         },
         {
           autogeneratePattern: '',

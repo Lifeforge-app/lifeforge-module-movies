@@ -14,11 +14,14 @@
     "build:server": "bun build ./server/index.ts --outdir ./server/dist --target bun --external @lifeforge/server-utils --external zod"
   },
   "dependencies": {
+    "jsdom": "^29.1.1",
     "language-name-map": "^0.3.0",
-    "qrcode.react": "^4.2.0"
+    "qrcode.react": "^4.2.0",
+    "react-virtualized": "^9.22.6"
   },
   "devDependencies": {
-    "@types/language-name-map": "^0.3.4"
+    "@types/language-name-map": "^0.3.4",
+    "@types/react-virtualized": "^9.22.3"
   },
   "lifeforge": {
     "icon": "tabler:movie",

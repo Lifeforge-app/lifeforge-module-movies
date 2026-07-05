@@ -5,6 +5,12 @@
     "movie": "Movie"
   },
   "modals": {
+    "browseTgv": {
+      "title": "Browse TGV"
+    },
+    "importFromTgv": {
+      "title": "Import from TGV"
+    },
     "searchTmdb": {
       "title": "Search Movie"
     },
@@ -31,6 +37,7 @@
   "buttons": {
     "addToLibrary": "Add to Library",
     "alreadyInLibrary": "Already in Library",
+    "linkToLibrary": "Link to Library",
     "addTicket": "Add Ticket",
     "updateTicket": "Update Ticket",
     "markAsWatched": "Mark as Watched",
@@ -39,9 +46,14 @@
     "showTicket": "Show Ticket",
     "addToCalendar": "Add to Calendar",
     "addedToCalendar": "Added to Calendar",
-    "updateMovieData": "Update Movie Data"
+    "updateMovieData": "Update Movie Data",
+    "importFromTgv": "Import from TGV",
+    "fromTmdb": "From TMDB",
+    "fromTgv": "From TGV"
   },
   "inputs": {
+    "email": "Email",
+    "pin": "PIN",
     "ticketNumber": "Ticket Number",
     "theatreSeat": "Theatre Seat",
     "theatreLocation": "Theatre Location",
@@ -50,8 +62,17 @@
     "category": "Category"
   },
   "tabs": {
+    "nowShowing": "Now Showing",
+    "comingSoon": "Coming Soon",
     "watched": "Watched",
     "unwatched": "Unwatched"
+  },
+  "metadata": {
+    "genres": "Genres",
+    "releaseDate": "Release Date",
+    "duration": "Duration",
+    "language": "Language",
+    "dataSource": "Data Source"
   },
   "misc": {
     "watched": "Watched on {{date}}"
