@@ -5,8 +5,12 @@ import { LocationSchema } from '@lifeforge/server-utils'
 
 import forge from '../forge'
 import schema from '../schema'
-import type { TGVBooking } from '../types/tgvBooking.types'
-import type { TGVListing } from '../types/tgvListing.types'
+import type { TGVBooking } from '../types/tgvBooking.type'
+import type { TGVExperienceAssets } from '../types/tgvExperienceAssets.type'
+import type { TGVListing } from '../types/tgvListing.type'
+import type { TGVMovieSession } from '../types/tgvMovieSession.type'
+import type { TGVSeatPlan } from '../types/tgvSeatPlan.type'
+import type { TGVSeatStatus } from '../types/tgvSeatStatus.type'
 
 const stripHtml = (html: string) =>
   new JSDOM(html).window.document.body.textContent?.trim() ?? ''
@@ -236,3 +240,344 @@ export const fetchTicket = forge
       })
     }
   )
+
+export const getSessionDates = forge
+  .query({
+    description: 'Get available session business dates for a TGV movie',
+    input: {
+      query: z.object({
+        movieId: z.string()
+      })
+    },
+    output: {
+      OK: z.array(z.string()),
+      BAD_REQUEST: z.string()
+    }
+  })
+  .callback(async ({ query: { movieId }, response }) => {
+    const res = await fetch(
+      'https://api.tgv.com.my/api/boxoffice/v1/moviesession_getsessionbusinessdates',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          movieid: movieId,
+          location: '',
+          experienceGroup: ''
+        })
+      }
+    )
+
+    if (!res.ok) {
+      return response.badRequest('Failed to fetch session dates')
+    }
+
+    const data = await res.json()
+
+    return response.ok(data.results.businessdates as string[])
+  })
+
+const CinemaSchema = z.object({
+  id: z.string(),
+  name: z.string()
+})
+
+const AreaSchema = z.object({
+  state: z.string(),
+  label: z.string(),
+  cinemas: z.array(CinemaSchema)
+})
+
+export const getMovieCinemas = forge
+  .query({
+    description: 'Get cinemas screening a movie on a given date',
+    input: {
+      query: z.object({
+        movieId: z.string(),
+        businessDate: z.string()
+      })
+    },
+    output: {
+      OK: z.array(AreaSchema),
+      BAD_REQUEST: z.string()
+    }
+  })
+  .callback(async ({ query: { movieId, businessDate }, response }) => {
+    const [stateRes, movieRes] = await Promise.all([
+      fetch('https://api.tgv.com.my/api/cinemas/v1/getstatecinema'),
+      fetch(
+        'https://api.tgv.com.my/api/boxoffice/v1/moviesession_getmoviecinemas',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            businessday: businessDate,
+            movieid: movieId,
+            experienceGroup: ''
+          })
+        }
+      )
+    ])
+
+    if (!stateRes.ok || !movieRes.ok) {
+      return response.badRequest('Failed to fetch cinemas')
+    }
+
+    const stateData = await stateRes.json()
+    const movieData = await movieRes.json()
+
+    const screeningIds = new Set(
+      movieData.results.locations.flatMap((loc: any) =>
+        loc.cinemaids.map((c: any) => c.cinemaid as string)
+      )
+    )
+
+    return response.ok(
+      stateData.results
+        .map((s: any) => ({
+          state: s.value,
+          label: s.label,
+          cinemas: s.cinemas
+            .filter((c: any) => screeningIds.has(c.cinemaid))
+            .map((c: any) => ({
+              id: c.cinemaid,
+              name: c.name
+            }))
+        }))
+        .filter((s: any) => s.cinemas.length > 0)
+    )
+  })
+
+const SessionSchema = z.object({
+  sessionid: z.string(),
+  screenname: z.string(),
+  showtime: z.string(),
+  experience: z.string(),
+  seatstotal: z.number(),
+  seatsused: z.number(),
+  usedpercentage: z.number()
+})
+
+export const getMovieSessions = forge
+  .query({
+    description: 'Get sessions for a movie at a cinema on a given date',
+    input: {
+      query: z.object({
+        cinemaId: z.string(),
+        businessDate: z.string(),
+        movieId: z.string()
+      })
+    },
+    output: {
+      OK: z.array(SessionSchema),
+      BAD_REQUEST: z.string()
+    }
+  })
+  .callback(
+    async ({ query: { cinemaId, businessDate, movieId }, response }) => {
+      const sessionRes = await fetch(
+        'https://api.tgv.com.my/api/boxoffice/v1/moviesession_get',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cinemaid: cinemaId,
+            businessdate: businessDate,
+            movieid: movieId,
+            retrieveexpired: false
+          })
+        }
+      )
+
+      if (!sessionRes.ok) {
+        return response.badRequest('Failed to fetch sessions')
+      }
+
+      const sessionData: TGVMovieSession = await sessionRes.json()
+
+      const sessions =
+        sessionData.results.businessday.cinemas[0]?.movies[0]?.experiences?.flatMap(
+          exp =>
+            exp.sessions.map(s => ({
+              sessionid: s.sessionid,
+              screenname: s.screenname,
+              showtime: s.showtimemy,
+              experience: exp.experience,
+              seatstotal: 0,
+              seatsused: 0,
+              usedpercentage: 0
+            }))
+        ) ?? []
+
+      if (sessions.length === 0) {
+        return response.ok([])
+      }
+
+      const seatRes = await fetch(
+        '	https://api.tgv.com.my/api/boxoffice/v1/moviesession_getseatstatus',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cinemaid: cinemaId,
+            sessionid: sessions.map(s => s.sessionid)
+          })
+        }
+      )
+
+      if (seatRes.ok) {
+        const seatData: TGVSeatStatus = await seatRes.json()
+        const seatMap = new Map(
+          seatData.results.seatstatuslist.map(s => [s.sessionid, s])
+        )
+
+        for (const session of sessions) {
+          const seatStatus = seatMap.get(session.sessionid)
+
+          if (seatStatus) {
+            session.seatstotal = seatStatus.seatstotal
+            session.seatsused = seatStatus.seatsused
+            session.usedpercentage = seatStatus.usedpercentage
+          }
+        }
+      }
+
+      return response.ok(sessions)
+    }
+  )
+
+const ExperienceLogoSchema = z.object({
+  key: z.string(),
+  subject: z.string(),
+  logoUrl: z.string()
+})
+
+export const getExperienceLogos = forge
+  .query({
+    description: 'Get experience logos from TGV',
+    output: {
+      OK: z.array(ExperienceLogoSchema),
+      BAD_REQUEST: z.string()
+    }
+  })
+  .callback(async ({ response }) => {
+    const res = await fetch(
+      'https://api.tgv.com.my/api/contentblocks/v1/getcontentblockitemkey',
+      {
+        method: 'POST',
+        body: JSON.stringify({ itemkey: 'seat-description' }),
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+
+    if (!res.ok) {
+      return response.badRequest('Failed to fetch experience data')
+    }
+
+    const data: TGVExperienceAssets = await res.json()
+
+    const assetMap = new Map(
+      data.results.contentblock.assets.map(a => [
+        a.assetkey,
+        a.extdata.fileinfo.fileurl
+      ])
+    )
+
+    return response.ok(
+      data.results.contentblock.extdata.contentblock.seating.map(s => ({
+        key: s.key,
+        subject: s.subject,
+        logoUrl: assetMap.get(s.logo) ?? ''
+      }))
+    )
+  })
+
+const SeatSchema = z.object({
+  columnIndex: z.number(),
+  status: z.number(),
+  seatsInGroup: z
+    .array(
+      z.object({
+        areaNumber: z.number(),
+        rowIndex: z.number(),
+        columnIndex: z.number()
+      })
+    )
+    .nullable()
+})
+
+const RowSchema = z.object({
+  physicalName: z.string(),
+  seats: z.array(SeatSchema)
+})
+
+const SeatPlanSchema = z.object({
+  areas: z.array(
+    z.object({
+      rows: z.array(RowSchema)
+    })
+  ),
+  screenStart: z.number(),
+  screenWidth: z.number(),
+  boundaryRight: z.number(),
+  boundaryLeft: z.number(),
+  boundaryTop: z.number()
+})
+
+export const getSeatPlan = forge
+  .query({
+    description: 'Get seat plan for a movie session',
+    input: {
+      query: z.object({
+        sessionId: z.string(),
+        cinemaId: z.string()
+      })
+    },
+    output: {
+      OK: SeatPlanSchema,
+      BAD_REQUEST: z.string()
+    }
+  })
+  .callback(async ({ query: { sessionId, cinemaId }, response }) => {
+    const res = await fetch(
+      'https://api.tgv.com.my/api/boxoffice/v1/moviesession_getseatplan',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionid: sessionId,
+          cinemaid: cinemaId
+        })
+      }
+    )
+
+    if (!res.ok) {
+      return response.badRequest('Failed to fetch seat plan')
+    }
+
+    const data: TGVSeatPlan = await res.json()
+    const layout = data.results.seatlayout
+
+    return response.ok({
+      areas: layout.areas.map(area => ({
+        rows: area.rows.map(row => ({
+          physicalName: row.physicalName || "",
+          seats: row.seats.map(seat => ({
+            columnIndex: seat.position.columnIndex,
+            status: seat.status,
+            seatsInGroup:
+              seat.seatsInGroup?.map(g => ({
+                areaNumber: g.areaNumber,
+                rowIndex: g.rowIndex,
+                columnIndex: g.columnIndex
+              })) ?? null
+          }))
+        }))
+      })),
+      screenStart: layout.screenStart,
+      screenWidth: layout.screenWidth,
+      boundaryRight: layout.boundaryRight,
+      boundaryLeft: layout.boundaryLeft,
+      boundaryTop: layout.boundaryTop
+    })
+  })

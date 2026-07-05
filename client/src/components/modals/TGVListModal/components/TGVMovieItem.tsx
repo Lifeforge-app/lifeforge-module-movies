@@ -17,6 +17,7 @@ import {
 import { forgeAPI } from '@/manifest'
 
 import SearchTMDBModal from '../../SearchTMDBModal'
+import ScreeningDetailsModal from '../../ScreeningDetailsModal'
 
 dayjs.extend(duration)
 
@@ -24,7 +25,15 @@ export type TGVMovie = InferOutput<
   typeof forgeAPI.tgv.list
 >['movies'][number]
 
-function TGVMovieItem({ data, isAdded }: { data: TGVMovie; isAdded: boolean }) {
+function TGVMovieItem({
+  data,
+  isAdded,
+  tab
+}: {
+  data: TGVMovie
+  isAdded: boolean
+  tab: 'nowShowing' | 'comingSoon'
+}) {
   const { open } = useModalStore()
 
   const handleAddToLibrary = () => {
@@ -112,7 +121,17 @@ function TGVMovieItem({ data, isAdded }: { data: TGVMovie; isAdded: boolean }) {
             </Box>
           ))}
         </Flex>
-        <Flex align="end" flex="1" justify="end" mt="lg">
+        <Flex align="end" direction="column" flex="1" gap="xs" justify="end" mt="lg">
+          {tab === 'nowShowing' && (
+            <Button
+              icon="tabler:movie"
+              variant="secondary"
+              width="100%"
+              onClick={() => open(ScreeningDetailsModal, { movieId: data.recid })}
+            >
+              Screening Details
+            </Button>
+          )}
           <Button
             disabled={isAdded}
             icon="tabler:plus"

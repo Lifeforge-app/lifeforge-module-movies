@@ -11,6 +11,9 @@
     "importFromTgv": {
       "title": "Import from TGV"
     },
+    "screeningDetails": {
+      "title": "Screening Details"
+    },
     "searchTmdb": {
       "title": "Search Movie"
     },
@@ -49,11 +52,17 @@
     "updateMovieData": "Update Movie Data",
     "importFromTgv": "Import from TGV",
     "fromTmdb": "From TMDB",
-    "fromTgv": "From TGV"
+    "fromTgv": "From TGV",
+    "screeningDetails": "Screening Details"
   },
   "inputs": {
+    "area": "Area",
+    "cinema": "Cinema",
+    "date": "Date",
     "email": "Email",
     "pin": "PIN",
+    "experience": "Experience",
+    "time": "Time",
     "ticketNumber": "Ticket Number",
     "theatreSeat": "Theatre Seat",
     "theatreLocation": "Theatre Location",

@@ -84,13 +84,14 @@ function TGVListModal({ onClose }: { onClose: () => void }) {
                       <Grid
                         gap="sm"
                         pb="md"
-                        templateCols="repeat(auto-fill, minmax(20rem, 1fr))"
+                        templateCols={{base: 1, sm: "repeat(auto-fill, minmax(20rem, 1fr))"}}
                       >
                         {data.movies.map(movie => (
                           <TGVMovieItem
                             key={movie.itemkey}
                             data={movie}
                             isAdded={existingTgvIds.has(movie.recid)}
+                            tab={tab}
                           />
                         ))}
                       </Grid>

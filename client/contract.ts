@@ -678,6 +678,372 @@ export const contract = {
         }
       }
     },
+    "getExperienceLogos": {
+      "method": "get",
+      "description": "Get experience logos from TGV",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {},
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "logoUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "key",
+              "subject",
+              "logoUrl"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
+    "getMovieCinemas": {
+      "method": "get",
+      "description": "Get cinemas screening a movie on a given date",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "movieId": {
+              "type": "string"
+            },
+            "businessDate": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "movieId",
+            "businessDate"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "cinemas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "state",
+              "label",
+              "cinemas"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
+    "getMovieSessions": {
+      "method": "get",
+      "description": "Get sessions for a movie at a cinema on a given date",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "cinemaId": {
+              "type": "string"
+            },
+            "businessDate": {
+              "type": "string"
+            },
+            "movieId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cinemaId",
+            "businessDate",
+            "movieId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sessionid": {
+                "type": "string"
+              },
+              "screenname": {
+                "type": "string"
+              },
+              "showtime": {
+                "type": "string"
+              },
+              "experience": {
+                "type": "string"
+              },
+              "seatstotal": {
+                "type": "number"
+              },
+              "seatsused": {
+                "type": "number"
+              },
+              "usedpercentage": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "sessionid",
+              "screenname",
+              "showtime",
+              "experience",
+              "seatstotal",
+              "seatsused",
+              "usedpercentage"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
+    "getSeatPlan": {
+      "method": "get",
+      "description": "Get seat plan for a movie session",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "sessionId": {
+              "type": "string"
+            },
+            "cinemaId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sessionId",
+            "cinemaId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "areas": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "rows": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "physicalName": {
+                          "type": "string"
+                        },
+                        "seats": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "columnIndex": {
+                                "type": "number"
+                              },
+                              "status": {
+                                "type": "number"
+                              },
+                              "seatsInGroup": {
+                                "anyOf": [
+                                  {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "areaNumber": {
+                                          "type": "number"
+                                        },
+                                        "rowIndex": {
+                                          "type": "number"
+                                        },
+                                        "columnIndex": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "required": [
+                                        "areaNumber",
+                                        "rowIndex",
+                                        "columnIndex"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "columnIndex",
+                              "status",
+                              "seatsInGroup"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "physicalName",
+                        "seats"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "rows"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "screenStart": {
+              "type": "number"
+            },
+            "screenWidth": {
+              "type": "number"
+            },
+            "boundaryRight": {
+              "type": "number"
+            },
+            "boundaryLeft": {
+              "type": "number"
+            },
+            "boundaryTop": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "areas",
+            "screenStart",
+            "screenWidth",
+            "boundaryRight",
+            "boundaryLeft",
+            "boundaryTop"
+          ],
+          "additionalProperties": false
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
+    "getSessionDates": {
+      "method": "get",
+      "description": "Get available session business dates for a TGV movie",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {
+        "query": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "movieId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "movieId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "BAD_REQUEST": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "string"
+        }
+      }
+    },
     "hasCachedSession": {
       "method": "get",
       "description": "Check if TGV session is cached and valid",

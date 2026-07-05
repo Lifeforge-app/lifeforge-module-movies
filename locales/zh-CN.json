@@ -11,6 +11,9 @@
     "importFromTgv": {
       "title": "从 TGV 导入"
     },
+    "screeningDetails": {
+      "title": "放映详情"
+    },
     "searchTmdb": {
       "title": "搜索电影"
     },
@@ -49,11 +52,17 @@
     "updateMovieData": "更新电影数据",
     "importFromTgv": "从 TGV 导入",
     "fromTmdb": "从 TMDB 添加",
-    "fromTgv": "从 TGV 添加"
+    "fromTgv": "从 TGV 添加",
+    "screeningDetails": "放映详情"
   },
   "inputs": {
+    "area": "区域",
+    "cinema": "影院",
+    "date": "日期",
     "email": "邮箱",
     "pin": "PIN",
+    "experience": "体验",
+    "time": "时间",
     "ticketNumber": "票券号码",
     "theatreSeat": "影院座位",
     "theatreLocation": "影院地点",

@@ -11,6 +11,9 @@
     "importFromTgv": {
       "title": "Import dari TGV"
     },
+    "screeningDetails": {
+      "title": "Butiran Tayangan"
+    },
     "searchTmdb": {
       "title": "Cari Filem"
     },
@@ -49,11 +52,17 @@
     "updateMovieData": "Kemas Kini Data Filem",
     "importFromTgv": "Import dari TGV",
     "fromTmdb": "Dari TMDB",
-    "fromTgv": "Dari TGV"
+    "fromTgv": "Dari TGV",
+    "screeningDetails": "Butiran Tayangan"
   },
   "inputs": {
+    "area": "Kawasan",
+    "cinema": "Pawagam",
+    "date": "Tarikh",
     "email": "Emel",
     "pin": "PIN",
+    "experience": "Pengalaman",
+    "time": "Masa",
     "ticketNumber": "Nombor Tiket",
     "theatreSeat": "Tempat Duduk Pawagam",
     "theatreLocation": "Lokasi Pawagam",
