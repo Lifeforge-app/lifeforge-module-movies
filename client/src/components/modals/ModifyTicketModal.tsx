@@ -18,7 +18,7 @@ import {
 
 import { forgeAPI } from '@/manifest'
 
-import type { MovieEntry } from '..'
+import type { MovieEntry } from '../..'
 
 const schema = z.object({
   ticket_number: z.string().min(1, 'Required'),

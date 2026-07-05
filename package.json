@@ -14,9 +14,12 @@
     "build:server": "bun build ./server/index.ts --outdir ./server/dist --target bun --external @lifeforge/server-utils --external zod"
   },
   "dependencies": {
+    "language-name-map": "^0.3.0",
     "qrcode.react": "^4.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/language-name-map": "^0.3.4"
+  },
   "lifeforge": {
     "icon": "tabler:movie",
     "category": "Lifestyle",

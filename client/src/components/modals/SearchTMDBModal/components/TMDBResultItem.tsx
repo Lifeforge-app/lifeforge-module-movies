@@ -31,8 +31,10 @@ function TMDBResultItem({
       onSuccess: async () => {
         await onAddToLibrary()
       },
-      onError: (error: any) => {
-        toast.error(`Failed to add movie: ${error.message || 'Unknown error'}`)
+      onError: (error: unknown) => {
+        toast.error(
+          `Failed to add movie: ${(error as Error).message || 'Unknown error'}`
+        )
       }
     })
   )

@@ -3,7 +3,7 @@ import { QRCodeSVG } from 'qrcode.react'
 
 import { Box, Flex, Icon, ModalHeader, Stack, Text } from '@lifeforge/ui'
 
-import type { MovieEntry } from '..'
+import type { MovieEntry } from '../..'
 
 function ShowTicketModal({
   data: { entry },

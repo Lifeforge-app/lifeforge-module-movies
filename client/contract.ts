@@ -46,7 +46,6 @@ export const contract = {
             "overview": {
               "type": "string"
             },
-            "countries": {},
             "language": {
               "type": "string"
             },
@@ -108,7 +107,6 @@ export const contract = {
             "genres",
             "duration",
             "overview",
-            "countries",
             "language",
             "release_date",
             "watch_date",
@@ -190,7 +188,6 @@ export const contract = {
                   "overview": {
                     "type": "string"
                   },
-                  "countries": {},
                   "language": {
                     "type": "string"
                   },
@@ -252,7 +249,6 @@ export const contract = {
                   "genres",
                   "duration",
                   "overview",
-                  "countries",
                   "language",
                   "release_date",
                   "watch_date",
@@ -352,7 +348,6 @@ export const contract = {
             "overview": {
               "type": "string"
             },
-            "countries": {},
             "language": {
               "type": "string"
             },
@@ -414,7 +409,6 @@ export const contract = {
             "genres",
             "duration",
             "overview",
-            "countries",
             "language",
             "release_date",
             "watch_date",
@@ -480,7 +474,6 @@ export const contract = {
             "overview": {
               "type": "string"
             },
-            "countries": {},
             "language": {
               "type": "string"
             },
@@ -542,7 +535,6 @@ export const contract = {
             "genres",
             "duration",
             "overview",
-            "countries",
             "language",
             "release_date",
             "watch_date",
@@ -698,7 +690,6 @@ export const contract = {
             "overview": {
               "type": "string"
             },
-            "countries": {},
             "language": {
               "type": "string"
             },
@@ -760,7 +751,6 @@ export const contract = {
             "genres",
             "duration",
             "overview",
-            "countries",
             "language",
             "release_date",
             "watch_date",

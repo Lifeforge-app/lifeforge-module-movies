@@ -11,7 +11,6 @@ export const schemas = {
       genres: z.any(),
       duration: z.number(),
       overview: z.string(),
-      countries: z.any(),
       language: z.string(),
       release_date: z.string(),
       watch_date: z.string(),
@@ -127,15 +126,6 @@ export const schemas = {
           required: false,
           system: false,
           type: 'text'
-        },
-        {
-          hidden: false,
-          maxSize: 0,
-          name: 'countries',
-          presentable: false,
-          required: false,
-          system: false,
-          type: 'json'
         },
         {
           autogeneratePattern: '',

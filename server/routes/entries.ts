@@ -127,12 +127,11 @@ export const create = forge
         tmdb_id: tmdbData.id,
         title: tmdbData.title,
         original_title: tmdbData.original_title,
-        poster: tmdbData.poster_path,
+        poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
         genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
         duration: tmdbData.runtime,
         overview: tmdbData.overview,
         release_date: tmdbData.release_date,
-        countries: tmdbData.origin_country,
         language: tmdbData.original_language
       }
 
@@ -176,6 +175,10 @@ export const update = forge
 
       const movieEntry = await pb.getOne.collection('entries').id(id).execute()
 
+      if (movieEntry.tmdb_id === -1) {
+        return response.badRequest('No TMDB ID')
+      }
+
       const tmdbRes = await fetch(
         `https://api.themoviedb.org/3/movie/${movieEntry.tmdb_id}`,
         {
@@ -195,12 +198,11 @@ export const update = forge
         tmdb_id: tmdbData.id,
         title: tmdbData.title,
         original_title: tmdbData.original_title,
-        poster: tmdbData.poster_path,
+        poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
         genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
         duration: tmdbData.runtime,
         overview: tmdbData.overview,
         release_date: tmdbData.release_date,
-        countries: tmdbData.origin_country,
         language: tmdbData.original_language
       }
 
