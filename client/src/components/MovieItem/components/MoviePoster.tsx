@@ -10,7 +10,6 @@ function MoviePoster() {
       bg={{ base: 'bg-200', dark: colorWithOpacity('bg-800', '40%') }}
       flexShrink="0"
       height={type === 'grid' ? 'auto' : '16.5rem'}
-      maxHeight="24em"
       overflow="hidden"
       position="relative"
       r="md"

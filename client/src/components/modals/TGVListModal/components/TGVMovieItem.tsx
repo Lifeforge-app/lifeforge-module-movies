@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 
 import type { InferOutput } from '@lifeforge/api'
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   Box,
   Button,
@@ -16,14 +17,12 @@ import {
 
 import { forgeAPI } from '@/manifest'
 
-import SearchTMDBModal from '../../SearchTMDBModal'
 import ScreeningDetailsModal from '../../ScreeningDetailsModal'
+import SearchTMDBModal from '../../SearchTMDBModal'
 
 dayjs.extend(duration)
 
-export type TGVMovie = InferOutput<
-  typeof forgeAPI.tgv.list
->['movies'][number]
+export type TGVMovie = InferOutput<typeof forgeAPI.tgv.list>['movies'][number]
 
 function TGVMovieItem({
   data,
@@ -35,6 +34,7 @@ function TGVMovieItem({
   tab: 'nowShowing' | 'comingSoon'
 }) {
   const { open } = useModalStore()
+  const { t } = useModuleTranslation()
 
   const handleAddToLibrary = () => {
     open(SearchTMDBModal, {
@@ -46,33 +46,33 @@ function TGVMovieItem({
   const metadataItems = [
     {
       icon: 'tabler:category',
-      label: 'Genres',
+      label: t('metadata.genres'),
       value: data.genres.join(', ')
     },
     {
       icon: 'tabler:clock',
-      label: 'Duration',
+      label: t('metadata.duration'),
       value: data.duration
         ? dayjs.duration(data.duration, 'minutes').format('H [h] mm [m]')
         : 'TBA'
     },
     {
       icon: 'uil:globe',
-      label: 'Language',
+      label: t('metadata.language'),
       value: data.language
     }
   ]
 
   return (
-    <Card bg={surface.light} direction="column" gap="md">
-      <Box
+    <Card bg={surface.light} direction="column" gap="md" minWidth="0">
+      <Flex
+        centered
         bg={{ base: 'bg-200', dark: colorWithOpacity('bg-700', '40%') }}
-        maxHeight="24em"
+        
         overflow="hidden"
         position="relative"
         r="md"
         style={{ isolation: 'isolate' }}
-        width="100%"
       >
         <Box
           asChild
@@ -88,17 +88,11 @@ function TGVMovieItem({
             size="4.5em"
           />
         </Box>
-        <Box
-          asChild
-          height="100%"
-          r="md"
-          style={{ objectFit: 'contain' }}
-          width="100%"
-        >
+        <Box asChild height="100%" r="md" style={{ objectFit: 'contain' }}>
           <img alt="" src={data.poster} />
         </Box>
-      </Box>
-      <Flex direction="column" flex="1" width="100%">
+      </Flex>
+      <Flex direction="column" flex="1" minWidth="0">
         <Text color="custom-500" mb="xs" weight="semibold">
           {data.release_date ? dayjs(data.release_date).year() : 'TBA'}
         </Text>
@@ -121,13 +115,26 @@ function TGVMovieItem({
             </Box>
           ))}
         </Flex>
-        <Flex align="end" direction="column" flex="1" gap="xs" justify="end" mt="lg">
+        <Flex
+          align="end"
+          direction="column"
+          flex="1"
+          gap="xs"
+          justify="end"
+          minWidth="0"
+          mt="lg"
+        >
           {tab === 'nowShowing' && (
             <Button
               icon="tabler:movie"
               variant="secondary"
               width="100%"
-              onClick={() => open(ScreeningDetailsModal, { movieId: data.recid, movie: data })}
+              onClick={() =>
+                open(ScreeningDetailsModal, {
+                  movieId: data.recid,
+                  movie: data
+                })
+              }
             >
               Screening Details
             </Button>

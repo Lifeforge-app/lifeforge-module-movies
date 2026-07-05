@@ -197,10 +197,9 @@ function ScreeningDetailsModal({
                   value={selectedArea}
                   onChange={val => {
                     setSelectedArea(val)
-
-                    if (val !== 'all') {
-                      setSelectedCinema('')
-                    }
+                    setSelectedCinema('')
+                    setSelectedExperience('')
+                    setSelectedSession('')
                   }}
                 >
                   {cinemaData.map(area => (
