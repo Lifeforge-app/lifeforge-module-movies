@@ -1,7 +1,7 @@
 import type { MovieEntry } from '..'
 import { Stack } from '@lifeforge/ui'
 
-import MovieItem from './MovieItem'
+import MovieItem from '../components/MovieItem'
 
 function MovieList({ data }: { data: MovieEntry[] }) {
   return (

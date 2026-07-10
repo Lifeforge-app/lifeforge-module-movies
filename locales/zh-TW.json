@@ -86,5 +86,9 @@
   },
   "misc": {
     "watched": "觀看於{{date}}"
+  },
+  "viewModes": {
+    "grid": "網格",
+    "list": "列表"
   }
 }

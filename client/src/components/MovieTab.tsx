@@ -1,95 +1,70 @@
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { t } from 'i18next'
 
-import { useModuleTranslation } from '@lifeforge/localization'
+import type { InferOutput } from '@lifeforge/api'
 import {
   EmptyStateScreen,
   Scrollbar,
   Stack,
-  WithQuery,
-  useModalStore
+  useModalStore,
+  useTabContext,
+  useViewModeContext
 } from '@lifeforge/ui'
 
-import { useOpenTicketFromParams } from '@/hooks/useOpenTicketFromParams'
+import useFilter from '@/hooks/useFilter'
 import { forgeAPI } from '@/manifest'
 
-import MovieGrid from './MovieGrid'
-import MovieList from './MovieList'
-import MovieTabSelector from './MovieTabSelector'
+import MovieGrid from '../views/MovieGrid'
+import MovieList from '../views/MovieList'
 import SearchTMDBModal from './modals/SearchTMDBModal'
 
 function MovieTab({
-  viewMode,
-  searchQuery
+  data
 }: {
-  viewMode: 'grid' | 'list'
-  searchQuery: string
+  data: InferOutput<typeof forgeAPI.entries.list>
 }) {
-  const { t } = useModuleTranslation()
   const { open } = useModalStore()
+  const { View } = useViewModeContext<'grid' | 'list'>()
+  const { searchQuery } = useFilter()
+  const { TabSelector, currentTab } = useTabContext()
 
-  const [currentTab, onTabChange] = useState<'unwatched' | 'watched'>(
-    'unwatched'
-  )
+  const filteredData = data.entries.filter(entry => {
+    const matchesSearch = entry.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
 
-  const entriesQuery = useQuery(
-    forgeAPI.entries.list
-      .input({
-        watched: currentTab === 'watched' ? 'true' : 'false'
-      })
-      .queryOptions()
-  )
+    const matchesTab =
+      currentTab === 'unwatched' ? !entry.is_watched : entry.is_watched
 
-  useOpenTicketFromParams(entriesQuery.data?.entries ?? [])
+    return matchesSearch && matchesTab
+  })
 
   return (
-    <WithQuery query={entriesQuery}>
-      {data => {
-        const FinalComponent = viewMode === 'grid' ? MovieGrid : MovieList
-
-        return (
-          <Stack direction="column" flex="1" gap="sm">
-            <MovieTabSelector
-              currentTab={currentTab}
-              entriesCount={data.entries.length}
-              total={data.total}
-              onTabChange={onTabChange}
-            />
-            {data.entries.length === 0 ? (
-              <EmptyStateScreen
-                CTAButtonProps={{
-                  onClick: () => open(SearchTMDBModal, {}),
-                  tProps: { item: t('items.movie') },
-                  icon: 'tabler:plus',
-                  children: 'new'
-                }}
-                icon="tabler:movie-off"
-                message={{
-                  id: 'library'
-                }}
-              />
-            ) : (
-              <Scrollbar>
-                <FinalComponent
-                  data={data.entries.filter(entry => {
-                    const matchesSearch = entry.title
-                      .toLowerCase()
-                      .includes(searchQuery.toLowerCase())
-
-                    const matchesTab =
-                      currentTab === 'unwatched'
-                        ? !entry.is_watched
-                        : entry.is_watched
-
-                    return matchesSearch && matchesTab
-                  })}
-                />
-              </Scrollbar>
-            )}
-          </Stack>
-        )
-      }}
-    </WithQuery>
+    <Stack direction="column" flex="1" gap="sm">
+      <TabSelector />
+      {data.entries.length === 0 ? (
+        <EmptyStateScreen
+          CTAButtonProps={{
+            onClick: () => open(SearchTMDBModal, {}),
+            tProps: { item: t('items.movie') },
+            icon: 'tabler:plus',
+            children: 'new'
+          }}
+          icon="tabler:movie-off"
+          message={{
+            id: 'library'
+          }}
+        />
+      ) : (
+        <Scrollbar>
+          <View mode="grid">
+            <MovieGrid data={filteredData} />
+          </View>
+          <View mode="list">
+            <MovieList data={filteredData} />
+          </View>
+        </Scrollbar>
+      )}
+    </Stack>
   )
 }
 

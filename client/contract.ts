@@ -1,5 +1,33 @@
 export const contract = {
   "entries": {
+    "count": {
+      "method": "get",
+      "description": "Get watched and unwatched entry counts",
+      "noAuth": false,
+      "encrypted": true,
+      "isDownloadable": false,
+      "media": null,
+      "input": {},
+      "output": {
+        "OK": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "watched": {
+              "type": "number"
+            },
+            "unwatched": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "watched",
+            "unwatched"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
     "create": {
       "method": "post",
       "description": "Create a movie entry from TMDB",

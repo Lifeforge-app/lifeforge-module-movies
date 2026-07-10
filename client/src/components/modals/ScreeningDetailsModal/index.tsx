@@ -22,8 +22,8 @@ import {
 
 import { forgeAPI } from '@/manifest'
 
+import type { TGVMovie } from '../TGVListModal/components/TGVMovieItem'
 import SeatMap from './components/SeatMap'
-import type { TGVMovie } from '../TGVListModal/components/TGVMovieItem';
 
 dayjs.extend(duration)
 

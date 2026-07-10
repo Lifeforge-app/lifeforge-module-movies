@@ -31,7 +31,7 @@ function TGVMovieItem({
 }: {
   data: TGVMovie
   isAdded: boolean
-  tab: 'nowShowing' | 'comingSoon'
+  tab: string
 }) {
   const { open } = useModalStore()
   const { t } = useModuleTranslation()
@@ -68,7 +68,6 @@ function TGVMovieItem({
       <Flex
         centered
         bg={{ base: 'bg-200', dark: colorWithOpacity('bg-700', '40%') }}
-        
         overflow="hidden"
         position="relative"
         r="md"

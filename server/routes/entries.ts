@@ -293,3 +293,37 @@ export const toggleWatchStatus = forge
         .execute()
     )
   })
+
+export const count = forge
+  .query({
+    description: 'Get watched and unwatched entry counts',
+    output: {
+      OK: z.object({
+        watched: z.number(),
+        unwatched: z.number()
+      })
+    }
+  })
+  .callback(async ({ pb, response }) => {
+    const [watched, unwatched] = await Promise.all([
+      pb.getList
+        .collection('entries')
+        .page(1)
+        .perPage(1)
+        .filter([{ field: 'is_watched', operator: '=', value: true }])
+        .execute(),
+      pb.getList
+        .collection('entries')
+        .page(1)
+        .perPage(1)
+        .filter([{ field: 'is_watched', operator: '=', value: false }])
+        .execute()
+    ])
+
+    console.log(watched, unwatched)
+
+    return response.ok({
+      watched: watched.totalItems,
+      unwatched: unwatched.totalItems
+    })
+  })

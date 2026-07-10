@@ -86,5 +86,9 @@
   },
   "misc": {
     "watched": "Ditonton pada {{date}}"
+  },
+  "viewModes": {
+    "grid": "Grid",
+    "list": "Senarai"
   }
 }
