@@ -320,8 +320,6 @@ export const count = forge
         .execute()
     ])
 
-    console.log(watched, unwatched)
-
     return response.ok({
       watched: watched.totalItems,
       unwatched: unwatched.totalItems

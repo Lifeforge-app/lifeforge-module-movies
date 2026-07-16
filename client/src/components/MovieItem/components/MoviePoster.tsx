@@ -11,6 +11,7 @@ function MoviePoster() {
       flexShrink="0"
       height={type === 'grid' ? 'auto' : '16.5rem'}
       overflow="hidden"
+      aspectRatio="27/40"
       position="relative"
       r="md"
       style={{ isolation: 'isolate' }}

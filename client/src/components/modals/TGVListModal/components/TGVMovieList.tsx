@@ -1,24 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { AutoSizer } from 'react-virtualized'
 
-import type { InferInput } from '@lifeforge/api'
 import {
   Box,
   EmptyStateScreen,
   Flex,
   Grid,
   Scrollbar,
-  WithQuery,
-  useTabContext
+  WithQuery
 } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
+import { TGVTabbedView } from '..'
 import TGVMovieItem from './TGVMovieItem'
 
 function TGVMovieList() {
-  const { currentTab } =
-    useTabContext<InferInput<typeof forgeAPI.tgv.list>['query']['type']>()
+  const { currentTab } = TGVTabbedView.useContext()
 
   const moviesQuery = useQuery(
     forgeAPI.tgv.list.input({ type: currentTab }).queryOptions()

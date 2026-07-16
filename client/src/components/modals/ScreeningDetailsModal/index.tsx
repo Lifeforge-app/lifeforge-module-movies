@@ -331,7 +331,7 @@ function ScreeningDetailsModal({
                           <Text
                             truncate
                             as="p"
-                          >{`${dayjs(session.showtime).format('h:mm A')} — ${session.screenname} (${session.seatsused}/${session.seatstotal})`}</Text>
+                          >{`${dayjs(session.showtime).format('h:mm A')} - ${session.screenname} (${session.seatsused}/${session.seatstotal})`}</Text>
                         </Flex>
                       )
                     }}
@@ -352,7 +352,7 @@ function ScreeningDetailsModal({
                         <ListboxOption
                           key={s.sessionid}
                           color={color}
-                          label={`${dayjs(s.showtime).format('h:mm A')} — ${s.screenname} (${s.seatsused}/${s.seatstotal})`}
+                          label={`${dayjs(s.showtime).format('h:mm A')} - ${s.screenname} (${s.seatsused}/${s.seatstotal})`}
                           value={s.sessionid}
                         />
                       )

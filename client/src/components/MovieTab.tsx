@@ -1,21 +1,37 @@
-import { t } from 'i18next'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 import type { InferOutput } from '@lifeforge/api'
 import {
   EmptyStateScreen,
   Scrollbar,
   Stack,
-  useModalStore,
-  useTabContext,
-  useViewModeContext
+  createTabbedView,
+  useModalStore
 } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
 import { forgeAPI } from '@/manifest'
+import { ViewModes } from '@/views'
 
 import MovieGrid from '../views/MovieGrid'
 import MovieList from '../views/MovieList'
 import SearchTMDBModal from './modals/SearchTMDBModal'
+
+export const MovieTabbedView = createTabbedView({
+  tabs: [
+    {
+      id: 'unwatched',
+      name: 'tabs.unwatched',
+      icon: 'tabler:eye-off'
+    },
+    {
+      id: 'watched',
+      name: 'tabs.watched',
+      icon: 'tabler:eye'
+    }
+  ]
+})
 
 function MovieTab({
   data
@@ -23,9 +39,15 @@ function MovieTab({
   data: InferOutput<typeof forgeAPI.entries.list>
 }) {
   const { open } = useModalStore()
-  const { View } = useViewModeContext<'grid' | 'list'>()
   const { searchQuery } = useFilter()
-  const { TabSelector, currentTab } = useTabContext()
+  const { currentTab, setAmounts } = MovieTabbedView.useContext()
+
+  const {
+    data: count = {
+      watched: 0,
+      unwatched: 0
+    }
+  } = useQuery(forgeAPI.entries.count.queryOptions())
 
   const filteredData = data.entries.filter(entry => {
     const matchesSearch = entry.title
@@ -38,9 +60,13 @@ function MovieTab({
     return matchesSearch && matchesTab
   })
 
+  useEffect(() => {
+    setAmounts(count)
+  }, [count])
+
   return (
     <Stack direction="column" flex="1" gap="sm">
-      <TabSelector />
+      <MovieTabbedView.Selector />
       {data.entries.length === 0 ? (
         <EmptyStateScreen
           CTAButtonProps={{
@@ -56,12 +82,12 @@ function MovieTab({
         />
       ) : (
         <Scrollbar>
-          <View mode="grid">
+          <ViewModes.When mode="grid">
             <MovieGrid data={filteredData} />
-          </View>
-          <View mode="list">
+          </ViewModes.When>
+          <ViewModes.When mode="list">
             <MovieList data={filteredData} />
-          </View>
+          </ViewModes.When>
         </Scrollbar>
       )}
     </Stack>

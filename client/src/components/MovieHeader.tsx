@@ -3,9 +3,10 @@ import {
   ContextMenu,
   Flex,
   ModuleHeader,
-  SearchInput,
-  useViewModeContext
+  SearchInput
 } from '@lifeforge/ui'
+
+import { ViewModes } from '@/views'
 
 import MovieCreationMenu from './MovieCreationMenu'
 
@@ -16,8 +17,6 @@ function MovieHeader({
   searchQuery: string
   onSearchChange: (value: string) => void
 }) {
-  const { ViewModeSelector, ViewModeContextMenuSelector } = useViewModeContext()
-
   return (
     <>
       <ModuleHeader actionButton={<MovieCreationMenu variant="desktop" />} />
@@ -28,10 +27,10 @@ function MovieHeader({
           value={searchQuery}
           onChange={onSearchChange}
         />
-        <ViewModeSelector />
+        <ViewModes.Selector />
         <Box display={{ base: 'block', md: 'none' }}>
           <ContextMenu>
-            <ViewModeContextMenuSelector />
+            <ViewModes.ContextMenuSelector />
           </ContextMenu>
         </Box>
       </Flex>

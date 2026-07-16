@@ -1,66 +1,42 @@
 import { useQuery } from '@tanstack/react-query'
 
 import type { InferOutput } from '@lifeforge/api'
-import { useModuleTranslation } from '@lifeforge/localization'
-import { WithTab, WithViewMode } from '@lifeforge/ui'
+import { WithQuery } from '@lifeforge/ui'
 
 import useFilter from '@/hooks/useFilter'
 import { forgeAPI } from '@/manifest'
 
 import MovieHeader from './components/MovieHeader'
-import MovieTabs from './components/MovieTabs'
+import MovieTab, { MovieTabbedView } from './components/MovieTab'
+import { ViewModes } from './views'
 
 export type MovieEntry = InferOutput<
   typeof forgeAPI.entries.list
 >['entries'][number]
 
 function Movies() {
-  const { t } = useModuleTranslation()
   const { searchQuery, setSearchQuery } = useFilter()
 
-  const {
-    data: count = {
-      watched: 0,
-      unwatched: 0
-    }
-  } = useQuery(forgeAPI.entries.count.queryOptions())
+  const entriesQuery = useQuery(
+    forgeAPI.entries.list
+      .input({
+        watched:
+          MovieTabbedView.useContext.getState().currentTab === 'watched'
+            ? 'true'
+            : 'false'
+      })
+      .queryOptions()
+  )
 
   return (
-    <WithViewMode
-      modes={[
-        { icon: 'uil:apps', value: 'grid' },
-        { icon: 'tabler:list', value: 'list' }
-      ]}
-      selectorProps={{ display: { base: 'none', md: 'flex' } }}
-      useNuqs={false}
-    >
-      {() => (
-        <>
-          <MovieHeader
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-          <WithTab
-            tabs={[
-              {
-                id: 'unwatched',
-                name: t('tabs.unwatched'),
-                icon: 'tabler:eye-off',
-                amount: count.unwatched
-              },
-              {
-                id: 'watched',
-                name: t('tabs.watched'),
-                icon: 'tabler:eye',
-                amount: count.watched
-              }
-            ]}
-          >
-            {() => <MovieTabs />}
-          </WithTab>
-        </>
-      )}
-    </WithViewMode>
+    <ViewModes.Root>
+      <MovieHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <MovieTabbedView.Root>
+        <WithQuery query={entriesQuery}>
+          {data => <MovieTab data={data} />}
+        </WithQuery>
+      </MovieTabbedView.Root>
+    </ViewModes.Root>
   )
 }
 

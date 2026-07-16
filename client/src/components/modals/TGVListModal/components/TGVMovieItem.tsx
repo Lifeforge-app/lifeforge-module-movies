@@ -71,6 +71,7 @@ function TGVMovieItem({
         overflow="hidden"
         position="relative"
         r="md"
+        aspectRatio="27/40"
         style={{ isolation: 'isolate' }}
       >
         <Box
@@ -87,7 +88,14 @@ function TGVMovieItem({
             size="4.5em"
           />
         </Box>
-        <Box asChild height="100%" r="md" style={{ objectFit: 'contain' }}>
+        <Box
+          asChild
+          bg={surface.light}
+          height="100%"
+          width="100%"
+          r="md"
+          style={{ objectFit: 'contain' }}
+        >
           <img alt="" src={data.poster} />
         </Box>
       </Flex>

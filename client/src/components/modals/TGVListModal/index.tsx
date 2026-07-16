@@ -1,8 +1,5 @@
-import { useState } from 'react'
-
 import type { InferOutput } from '@lifeforge/api'
-import { useModuleTranslation } from '@lifeforge/localization'
-import { Flex, ModalHeader, WithTab } from '@lifeforge/ui'
+import { Flex, ModalHeader, createTabbedView } from '@lifeforge/ui'
 
 import { forgeAPI } from '@/manifest'
 
@@ -10,37 +7,29 @@ import TGVMovieList from './components/TGVMovieList'
 
 export type TGVNowShowing = InferOutput<typeof forgeAPI.tgv.list>
 
-function TGVListModal({ onClose }: { onClose: () => void }) {
-  const { t } = useModuleTranslation()
-  const [tab, setTab] = useState<'nowShowing' | 'comingSoon'>('nowShowing')
+export const TGVTabbedView = createTabbedView({
+  tabs: [
+    {
+      id: 'nowShowing',
+      name: 'tabs.nowShowing',
+      icon: 'tabler:ticket'
+    },
+    {
+      id: 'comingSoon',
+      name: 'tabs.comingSoon',
+      icon: 'tabler:calendar'
+    }
+  ]
+})
 
+function TGVListModal({ onClose }: { onClose: () => void }) {
   return (
     <Flex direction="column" minHeight="70vh" minWidth="70vw">
       <ModalHeader icon="tabler:ticket" title="Browse TGV" onClose={onClose} />
-      <WithTab
-        currentTab={tab}
-        tabs={[
-          {
-            id: 'nowShowing',
-            name: t('tabs.nowShowing'),
-            icon: 'tabler:ticket'
-          },
-          {
-            id: 'comingSoon',
-            name: t('tabs.comingSoon'),
-            icon: 'tabler:calendar'
-          }
-        ]}
-        useNuqs={false}
-        onTabChange={setTab}
-      >
-        {({ TabSelector }) => (
-          <>
-            <TabSelector />
-            <TGVMovieList />
-          </>
-        )}
-      </WithTab>
+      <TGVTabbedView.Root>
+        <TGVTabbedView.Selector />
+        <TGVMovieList />
+      </TGVTabbedView.Root>
     </Flex>
   )
 }
