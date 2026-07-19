@@ -8,7 +8,7 @@
   "version": "0.0.5",
   "type": "module",
   "author": "Melvin Chia <melvinchia623600@gmail.com>",
-  "description": "Your personal log for every movie you\u2019ve watched.",
+  "description": "Your personal log for every movie you’ve watched.",
   "scripts": {
     "typecheck": "pnpm run typecheck:client && pnpm run typecheck:server",
     "typecheck:client": "cd client && tsc",
@@ -39,11 +39,11 @@
   },
   "peerDependencies": {
     "@lifeforge/api": "workspace:*",
-    "@lifeforge/server-utils": "workspace:*",
-    "@lifeforge/pocketbase": "workspace:*",
-    "@lifeforge/localization": "workspace:*",
-    "@lifeforge/ui": "workspace:*",
+    "@lifeforge/configs": "workspace:*",
     "@lifeforge/federation": "workspace:*",
-    "@lifeforge/configs": "workspace:*"
+    "@lifeforge/localization": "workspace:*",
+    "@lifeforge/pocketbase": "workspace:*",
+    "@lifeforge/server-utils": "workspace:*",
+    "@lifeforge/ui": "workspace:*"
   }
 }
