@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import type { InferOutput } from '@lifeforge/api'
+import { useModuleTranslation } from '@lifeforge/localization'
 import {
   EmptyStateScreen,
   Scrollbar,
@@ -38,6 +39,7 @@ function MovieTab({
 }: {
   data: InferOutput<typeof forgeAPI.entries.list>
 }) {
+  const { t } = useModuleTranslation()
   const { open } = useModalStore()
   const { searchQuery } = useFilter()
   const { currentTab, setAmounts } = MovieTabbedView.useContext()
