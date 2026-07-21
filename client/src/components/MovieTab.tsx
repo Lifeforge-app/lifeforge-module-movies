@@ -20,6 +20,7 @@ import MovieList from '../views/MovieList'
 import SearchTMDBModal from './modals/SearchTMDBModal'
 
 export const MovieTabbedView = createTabbedView({
+  useNuqs: true,
   tabs: [
     {
       id: 'unwatched',
