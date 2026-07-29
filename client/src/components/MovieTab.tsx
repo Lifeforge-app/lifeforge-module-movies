@@ -43,14 +43,9 @@ function MovieTab({
   const { t } = useModuleTranslation()
   const { open } = useModalStore()
   const { searchQuery } = useFilter()
-  const { currentTab, setAmounts } = MovieTabbedView.useContext()
-
-  const {
-    data: count = {
-      watched: 0,
-      unwatched: 0
-    }
-  } = useQuery(forgeAPI.entries.count.queryOptions())
+  const currentTab = MovieTabbedView.useContext(s => s.currentTab)
+  const setAmounts = MovieTabbedView.useContext(s => s.setAmounts)
+  const { data: count } = useQuery(forgeAPI.entries.count.queryOptions())
 
   const filteredData = data.entries.filter(entry => {
     const matchesSearch = entry.title
@@ -64,8 +59,10 @@ function MovieTab({
   })
 
   useEffect(() => {
-    setAmounts(count)
-  }, [count])
+    if (count) {
+      setAmounts(count)
+    }
+  }, [count, setAmounts])
 
   return (
     <Stack direction="column" flex="1" gap="sm">

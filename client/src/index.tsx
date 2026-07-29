@@ -16,14 +16,12 @@ export type MovieEntry = InferOutput<
 
 function Movies() {
   const { searchQuery, setSearchQuery } = useFilter()
+  const currentTab = MovieTabbedView.useContext(s => s.currentTab)
 
   const entriesQuery = useQuery(
     forgeAPI.entries.list
       .input({
-        watched:
-          MovieTabbedView.useContext.getState().currentTab === 'watched'
-            ? 'true'
-            : 'false'
+        watched: currentTab === 'watched' ? 'true' : 'false'
       })
       .queryOptions()
   )
