@@ -31,7 +31,8 @@ function TGVLoginModal({
 
   const sessionQuery = useQuery(
     forgeAPI.tgv.hasCachedSession.queryOptions({
-      queryKey: [...forgeAPI.tgv.hasCachedSession.key, Math.random()]
+      staleTime: 0,
+      refetchOnMount: 'always'
     })
   )
 
@@ -52,10 +53,10 @@ function TGVLoginModal({
   )
 
   useEffect(() => {
-    if (sessionQuery.data === true) {
-      fetchTicketMutation.mutateAsync({ tgvId })
+    if (sessionQuery.data === true && fetchTicketMutation.isIdle) {
+      fetchTicketMutation.mutate({ tgvId })
     }
-  }, [sessionQuery.data])
+  }, [sessionQuery.data, tgvId, fetchTicketMutation])
 
   const [loading, onSubmit] = usePromiseLoading(() =>
     fetchTicketMutation.mutateAsync({ email, pin, tgvId })
