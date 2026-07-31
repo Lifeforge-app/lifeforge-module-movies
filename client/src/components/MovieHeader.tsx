@@ -19,7 +19,7 @@ function MovieHeader({
 }) {
   return (
     <>
-      <ModuleHeader actionButton={<MovieCreationMenu variant="desktop" />} />
+      <ModuleHeader trailing={<MovieCreationMenu variant="desktop" />} />
       <Flex align="center" as="header" gap="xs">
         <SearchInput
           debounceMs={300}
