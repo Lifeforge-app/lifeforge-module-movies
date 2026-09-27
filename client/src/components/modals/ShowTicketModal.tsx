@@ -33,19 +33,22 @@ function ShowTicketModal({
   ]
 
   return (
-    <Box maxWidth="20rem">
+    <Box maxWidth={{ lg: '20rem' }}>
       <ModalHeader icon="tabler:ticket" title="ticket.view" onClose={onClose} />
       {entry && (
         <>
           <Flex centered width="100%">
             <Flex
               centered
+              shadow
               aspectRatio="1 / 1"
-              bg="bg-100"
               height="auto"
               maxWidth="20rem"
-              p="2xl"
+              p={{ base: 'lg', sm: '2xl' }}
               r="lg"
+              style={{
+                backgroundColor: 'white'
+              }}
               width="100%"
             >
               <QRCodeSVG

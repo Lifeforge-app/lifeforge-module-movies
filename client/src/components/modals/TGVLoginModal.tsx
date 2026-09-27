@@ -71,7 +71,7 @@ function TGVLoginModal({
   }
 
   return (
-    <Box minWidth="24rem">
+    <Box minWidth={{ md: '24rem' }}>
       <ModalHeader
         icon="tabler:cloud-download"
         title="importFromTgv"
