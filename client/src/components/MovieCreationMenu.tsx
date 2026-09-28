@@ -48,20 +48,16 @@ function MovieCreationMenu({ variant }: { variant: 'desktop' | 'mobile' }) {
   }
 
   return (
-    <ContextMenu
-      bottom="1.5rem"
-      buttonComponent={<FAB position="static" visibilityBreakpoint="md" />}
-      componentProps={{
-        menu: { minWidth: '18em' },
-        button: { position: 'static' }
+    <FAB
+      menuProps={{
+        componentProps: {
+          menu: { minWidth: '18em' }
+        }
       }}
-      position="fixed"
-      right="1.5rem"
-      width="min-content"
-      zIndex="10"
+      visibilityBreakpoint="md"
     >
       {items}
-    </ContextMenu>
+    </FAB>
   )
 }
 

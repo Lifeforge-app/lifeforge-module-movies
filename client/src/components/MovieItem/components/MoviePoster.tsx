@@ -7,15 +7,15 @@ function MoviePoster() {
 
   return (
     <Box
+      aspectRatio="27/40"
       bg={{ base: 'bg-200', dark: colorWithOpacity('bg-800', '40%') }}
       flexShrink="0"
-      height={type === 'grid' ? 'auto' : '16.5rem'}
+      height={type === 'grid' ? 'auto' : { base: '100%', md: '16.5rem' }}
       overflow="hidden"
-      aspectRatio="27/40"
       position="relative"
       r="md"
       style={{ isolation: 'isolate' }}
-      width={type === 'grid' ? '100%' : '12rem'}
+      width={type === 'grid' ? '100%' : { base: '100%', md: '12rem' }}
     >
       <Box
         asChild
