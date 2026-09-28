@@ -77,7 +77,7 @@ function TGVLoginModal({
         title="importFromTgv"
         onClose={onClose}
       />
-      <Stack gap="sm" mt="lg">
+      <Stack mt="lg">
         <TextInput
           icon="tabler:mail"
           inputMode="email"

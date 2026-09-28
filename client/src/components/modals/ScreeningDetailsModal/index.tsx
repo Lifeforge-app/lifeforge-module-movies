@@ -121,7 +121,7 @@ function ScreeningDetailsModal({
         title="screeningDetails"
         onClose={onClose}
       />
-      <Stack gap="sm" mt="lg">
+      <Stack mt="lg">
         <Card bg={surface.light} direction="row" gap="md">
           <Box
             flexShrink="0"
