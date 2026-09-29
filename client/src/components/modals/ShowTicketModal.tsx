@@ -4,7 +4,6 @@ import { QRCodeSVG } from 'qrcode.react'
 import {
   Bordered,
   Box,
-  Card,
   Flex,
   Grid,
   Icon,
@@ -54,17 +53,19 @@ function ShowTicketModal({
     <Box maxWidth={{ lg: '28rem' }}>
       <ModalHeader icon="tabler:ticket" title="ticket.view" onClose={onClose} />
       {entry && (
-        <Card mt="lg" overflow="hidden" p="none" width="100%">
-          <Box height="10rem" overflow="hidden" position="relative">
+        <>
+          <Box height="14rem" overflow="hidden" position="relative" r="md">
             <img
               alt=""
               src={entry.poster}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
             <Box
-              bg={colorWithOpacity('bg-950', '50%')}
               inset="0"
               position="absolute"
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${colorWithOpacity('bg-950', '90%')} 60%)`
+              }}
             />
             <Flex
               direction="column"
@@ -81,7 +82,7 @@ function ShowTicketModal({
               </Text>
             </Flex>
           </Box>
-          <Grid gap="md" py="lg" templateCols={2}>
+          <Grid gap="md" mt="lg" templateCols={2}>
             {details.map(detail => (
               <Stack key={detail.label} gap="xs">
                 <Flex align="center" gap="xs">
@@ -94,7 +95,7 @@ function ShowTicketModal({
               </Stack>
             ))}
           </Grid>
-          <Bordered borderSide="top" borderStyle="dashed" />
+          <Bordered borderSide="top" borderStyle="dashed" my="md" />
           <Flex align="center" direction="column" gap="sm">
             <Flex
               centered
@@ -121,7 +122,7 @@ function ShowTicketModal({
               {entry.ticket_number}
             </Text>
           </Flex>
-        </Card>
+        </>
       )}
     </Box>
   )
