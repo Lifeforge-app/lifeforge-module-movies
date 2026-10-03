@@ -65,82 +65,121 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "tmdb_id": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "tgv_id": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "original_title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "poster": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
-            "genres": {},
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "duration": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "overview": {
               "type": "string"
             },
             "language": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "release_date": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "watch_date": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ticket_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_seat": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_showtime": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "theatre_location": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
             "theatre_location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lon": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lon"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
+              ]
             },
             "theatre_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "is_watched": {
               "type": "boolean"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "tmdb_id",
             "tgv_id",
             "title",
@@ -158,16 +197,9 @@ export const contract = {
             "theatre_location",
             "theatre_location_coords",
             "theatre_number",
-            "is_watched",
-            "id",
-            "collectionId",
-            "collectionName"
+            "is_watched"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -207,82 +239,121 @@ export const contract = {
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "tmdb_id": {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": -2147483648,
+                    "maximum": 2147483647
                   },
                   "tgv_id": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "original_title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "poster": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 512
                   },
-                  "genres": {},
+                  "genres": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "duration": {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": -2147483648,
+                    "maximum": 2147483647
                   },
                   "overview": {
                     "type": "string"
                   },
                   "language": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
                   },
                   "release_date": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
                   },
                   "watch_date": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "ticket_number": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "theatre_seat": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "theatre_showtime": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "theatre_location": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 512
                   },
                   "theatre_location_coords": {
-                    "type": "object",
-                    "properties": {
-                      "lat": {
-                        "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "lat": {
+                            "type": "number"
+                          },
+                          "lon": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "lat",
+                          "lon"
+                        ],
+                        "additionalProperties": false
                       },
-                      "lon": {
-                        "type": "number"
+                      {
+                        "type": "null"
                       }
-                    },
-                    "required": [
-                      "lat",
-                      "lon"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   "theatre_number": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                   },
                   "is_watched": {
                     "type": "boolean"
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "collectionId": {
-                    "type": "string"
-                  },
-                  "collectionName": {
-                    "type": "string"
                   }
                 },
                 "required": [
+                  "id",
                   "tmdb_id",
                   "tgv_id",
                   "title",
@@ -300,10 +371,7 @@ export const contract = {
                   "theatre_location",
                   "theatre_location_coords",
                   "theatre_number",
-                  "is_watched",
-                  "id",
-                  "collectionId",
-                  "collectionName"
+                  "is_watched"
                 ],
                 "additionalProperties": false
               }
@@ -340,8 +408,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "toggleWatchStatus": {
@@ -371,82 +438,121 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "tmdb_id": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "tgv_id": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "original_title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "poster": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
-            "genres": {},
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "duration": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "overview": {
               "type": "string"
             },
             "language": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "release_date": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "watch_date": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ticket_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_seat": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_showtime": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "theatre_location": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
             "theatre_location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lon": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lon"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
+              ]
             },
             "theatre_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "is_watched": {
               "type": "boolean"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "tmdb_id",
             "tgv_id",
             "title",
@@ -464,14 +570,10 @@ export const contract = {
             "theatre_location",
             "theatre_location_coords",
             "theatre_number",
-            "is_watched",
-            "id",
-            "collectionId",
-            "collectionName"
+            "is_watched"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     },
     "update": {
@@ -501,82 +603,121 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "tmdb_id": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "tgv_id": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "original_title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "poster": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
-            "genres": {},
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "duration": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "overview": {
               "type": "string"
             },
             "language": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "release_date": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "watch_date": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ticket_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_seat": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_showtime": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "theatre_location": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
             "theatre_location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lon": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lon"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
+              ]
             },
             "theatre_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "is_watched": {
               "type": "boolean"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "tmdb_id",
             "tgv_id",
             "title",
@@ -594,18 +735,10 @@ export const contract = {
             "theatre_location",
             "theatre_location_coords",
             "theatre_number",
-            "is_watched",
-            "id",
-            "collectionId",
-            "collectionName"
+            "is_watched"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -646,19 +779,30 @@ export const contract = {
               "type": "object",
               "properties": {
                 "theatre_location": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 512
                 },
                 "theatre_number": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 255
                 },
                 "theatre_seat": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 255
                 },
                 "theatre_showtime": {
-                  "type": "string"
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "ticket_number": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 255
                 },
                 "theatre_location_coords": {
                   "anyOf": [
@@ -699,10 +843,6 @@ export const contract = {
               "const": false
             }
           ]
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -738,10 +878,6 @@ export const contract = {
             ],
             "additionalProperties": false
           }
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -811,10 +947,6 @@ export const contract = {
             ],
             "additionalProperties": false
           }
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -888,10 +1020,6 @@ export const contract = {
             ],
             "additionalProperties": false
           }
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -1029,10 +1157,6 @@ export const contract = {
             "boundaryTop"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -1065,10 +1189,6 @@ export const contract = {
           "items": {
             "type": "string"
           }
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     },
@@ -1173,10 +1293,6 @@ export const contract = {
             "movies"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     }
@@ -1205,8 +1321,7 @@ export const contract = {
         }
       },
       "output": {
-        "NO_CONTENT": true,
-        "NOT_FOUND": true
+        "NO_CONTENT": true
       }
     },
     "update": {
@@ -1235,13 +1350,16 @@ export const contract = {
           "type": "object",
           "properties": {
             "ticket_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_seat": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_showtime": {
               "type": "string"
@@ -1293,82 +1411,121 @@ export const contract = {
           "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
             "tmdb_id": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "tgv_id": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "original_title": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "poster": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
-            "genres": {},
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "duration": {
-              "type": "number"
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
             },
             "overview": {
               "type": "string"
             },
             "language": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "release_date": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "watch_date": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "ticket_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_seat": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "theatre_showtime": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "theatre_location": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 512
             },
             "theatre_location_coords": {
-              "type": "object",
-              "properties": {
-                "lat": {
-                  "type": "number"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lon": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lon"
+                  ],
+                  "additionalProperties": false
                 },
-                "lon": {
-                  "type": "number"
+                {
+                  "type": "null"
                 }
-              },
-              "required": [
-                "lat",
-                "lon"
-              ],
-              "additionalProperties": false
+              ]
             },
             "theatre_number": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             },
             "is_watched": {
               "type": "boolean"
-            },
-            "id": {
-              "type": "string"
-            },
-            "collectionId": {
-              "type": "string"
-            },
-            "collectionName": {
-              "type": "string"
             }
           },
           "required": [
+            "id",
             "tmdb_id",
             "tgv_id",
             "title",
@@ -1386,14 +1543,10 @@ export const contract = {
             "theatre_location",
             "theatre_location_coords",
             "theatre_number",
-            "is_watched",
-            "id",
-            "collectionId",
-            "collectionName"
+            "is_watched"
           ],
           "additionalProperties": false
-        },
-        "NOT_FOUND": true
+        }
       }
     }
   },
@@ -1522,10 +1675,6 @@ export const contract = {
             "total_results"
           ],
           "additionalProperties": false
-        },
-        "BAD_REQUEST": {
-          "$schema": "https://json-schema.org/draft/2020-12/schema",
-          "type": "string"
         }
       }
     }

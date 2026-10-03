@@ -3,8 +3,9 @@ import z from 'zod'
 
 import { LocationSchema } from '@lifeforge/server-utils'
 
+import { entriesDto } from '@/types/entries.type'
+
 import forge from '../forge'
-import schema from '../schema'
 import type { TGVBooking } from '../types/tgvBooking.type'
 import type { TGVCinema } from '../types/tgvCinema.type'
 import type { TGVExperienceAssets } from '../types/tgvExperienceAssets.type'
@@ -61,8 +62,7 @@ export const list = forge
       })
     },
     output: {
-      OK: TGVResponseSchema,
-      BAD_REQUEST: z.string()
+      OK: TGVResponseSchema
     }
   })
   .callback(async ({ query: { type }, response }) => {
@@ -145,7 +145,7 @@ export const fetchTicket = forge
     },
     output: {
       OK: z.union([
-        schema.entries
+        entriesDto
           .pick({
             theatre_location: true,
             theatre_number: true,
@@ -154,16 +154,15 @@ export const fetchTicket = forge
             ticket_number: true
           })
           .extend({
+            theatre_showtime: z.string().nullable(),
             theatre_location_coords: LocationSchema.shape.location.nullable()
           }),
         z.literal(false)
-      ]),
-      BAD_REQUEST: z.string()
+      ])
     }
   })
   .callback(
     async ({
-      pb,
       body: { email, pin, tgvId },
       response,
       core: {
@@ -215,7 +214,7 @@ export const fetchTicket = forge
       let locationCoords: z.infer<typeof LocationSchema.shape.location> | null =
         null
 
-      const gcloudAPIKey = await getAPIKey('gcloud', pb)
+      const gcloudAPIKey = await getAPIKey('gcloud')
 
       if (gcloudAPIKey) {
         const locSearchResults = await searchLocations(
@@ -252,8 +251,7 @@ export const getSessionDates = forge
       })
     },
     output: {
-      OK: z.array(z.string()),
-      BAD_REQUEST: z.string()
+      OK: z.array(z.string())
     }
   })
   .callback(async ({ query: { movieId }, response }) => {
@@ -300,8 +298,7 @@ export const getMovieCinemas = forge
       })
     },
     output: {
-      OK: z.array(AreaSchema),
-      BAD_REQUEST: z.string()
+      OK: z.array(AreaSchema)
     }
   })
   .callback(async ({ query: { movieId, businessDate }, response }) => {
@@ -371,8 +368,7 @@ export const getMovieSessions = forge
       })
     },
     output: {
-      OK: z.array(SessionSchema),
-      BAD_REQUEST: z.string()
+      OK: z.array(SessionSchema)
     }
   })
   .callback(
@@ -458,8 +454,7 @@ export const getExperienceLogos = forge
   .query({
     description: 'Get experience logos from TGV',
     output: {
-      OK: z.array(ExperienceLogoSchema),
-      BAD_REQUEST: z.string()
+      OK: z.array(ExperienceLogoSchema)
     }
   })
   .callback(async ({ response }) => {
@@ -536,8 +531,7 @@ export const getSeatPlan = forge
       })
     },
     output: {
-      OK: SeatPlanSchema,
-      BAD_REQUEST: z.string()
+      OK: SeatPlanSchema
     }
   })
   .callback(async ({ query: { sessionId, cinemaId }, response }) => {

@@ -1,6 +1,8 @@
+import { inArray } from 'drizzle-orm'
 import z from 'zod'
 
 import forge from '../forge'
+import { moviesEntries } from '../schema.drizzle'
 
 const TMDBSearchResultSchema = z.object({
   adult: z.boolean(),
@@ -38,12 +40,11 @@ export const search = forge
     },
     output: {
       OK: TMDBResponseSchema,
-      BAD_REQUEST: z.string()
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       query: { q, page },
       core: {
         api: { getAPIKey }
@@ -52,7 +53,7 @@ export const search = forge
     }) => {
       const parsedPage = parseInt(page) || 1
 
-      const apiKey = await getAPIKey('tmdb', pb)
+      const apiKey = await getAPIKey('tmdb')
 
       if (!apiKey) {
         return response.badRequest('API key not found')
@@ -70,22 +71,21 @@ export const search = forge
 
       const tmdbData = await res.json()
 
-      const allIds = await pb.getFullList
-        .collection('entries')
-        .filter([
-          {
-            combination: '||',
-            filters: tmdbData.results.map((entry: { id: number }) => ({
-              field: 'tmdb_id',
-              operator: '=',
-              value: entry.id
-            }))
-          }
-        ])
-        .execute()
+      const ids: number[] = tmdbData.results.map(
+        (entry: { id: number }) => entry.id
+      )
+
+      const existing = ids.length
+        ? await db
+            .select({ tmdb_id: moviesEntries.tmdb_id })
+            .from(moviesEntries)
+            .where(inArray(moviesEntries.tmdb_id, ids))
+        : []
+
+      const existingIds = new Set(existing.map(entry => entry.tmdb_id))
 
       tmdbData.results.forEach((entry: any) => {
-        entry.existed = allIds.some(e => e.tmdb_id === entry.id)
+        entry.existed = existingIds.has(entry.id)
       })
 
       return response.ok(

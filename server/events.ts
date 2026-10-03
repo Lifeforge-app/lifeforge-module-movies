@@ -1,39 +1,54 @@
+import { and, gte, isNotNull, lte } from 'drizzle-orm'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import { type BuiltModuleSchema } from '@lifeforge/drizzle'
 import dayjs from 'dayjs'
 
-import type { PBService } from '@lifeforge/pocketbase'
+import * as schema from './schema.drizzle'
+
+type MoviesDb = PostgresJsDatabase<BuiltModuleSchema<typeof schema>>
 
 export default async function getEvents({
-  pb,
+  db,
   start,
   end
 }: {
-  pb: PBService<{}>
+  db: MoviesDb
   start: string
   end: string
 }) {
-  return (
-    (await pb.instance
-      .collection('movies__entries')
-      .getFullList({
-        filter: `theatre_showtime >= "${start}" && theatre_showtime <= "${end}"`
-      })
-      .catch(() => [])) as any[]
-  )
-    .filter(e => e.theatre_showtime)
-    .map(entry => ({
-      id: entry.id,
-      type: 'single' as const,
-      title: entry.title,
-      start: entry.theatre_showtime,
-      end: dayjs(entry.theatre_showtime)
-        .add(entry.duration || 0, 'minutes')
-        .toISOString(),
-      category: '_movie',
-      calendar: '',
-      location: entry.theatre_location ?? '',
-      location_coords: entry.theatre_location_coords,
-      description: `
-  ![${entry.title}](http://image.tmdb.org/t/p/w300/${entry.poster})
+  const entries = await db
+    .select()
+    .from(schema.moviesEntries)
+    .where(
+      and(
+        isNotNull(schema.moviesEntries.theatre_showtime),
+        gte(schema.moviesEntries.theatre_showtime, dayjs(start).toDate()),
+        lte(schema.moviesEntries.theatre_showtime, dayjs(end).toDate())
+      )
+    )
+
+  return entries.flatMap(entry => {
+    const showtime = entry.theatre_showtime
+
+    if (!showtime) {
+      return []
+    }
+
+    return [
+      {
+        id: entry.id,
+        type: 'single' as const,
+        title: entry.title,
+        start: showtime.toISOString(),
+        end: dayjs(showtime)
+          .add(entry.duration || 0, 'minutes')
+          .toISOString(),
+        category: '_movie',
+        calendar: '',
+        location: entry.theatre_location ?? '',
+        location_coords: entry.theatre_location_coords ?? { lat: 0, lon: 0 },
+        description: `
+  ![${entry.title}](${entry.poster})
 
   ### Movie Description:
   ${entry.overview}
@@ -44,6 +59,8 @@ export default async function getEvents({
   ### Seat Number:
   ${entry.theatre_seat}
         `,
-      reference_link: `/movies?show-ticket=${entry.id}`
-    }))
+        reference_link: `/movies?show-ticket=${entry.id}`
+      }
+    ]
+  })
 }

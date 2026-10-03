@@ -1,7 +1,11 @@
+import { eq, count as sqlCount } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import z from 'zod'
 
+import { entriesDto } from '@/types/entries.type'
+
 import forge from '../forge'
-import movieSchemas from '../schema'
+import { moviesEntries } from '../schema.drizzle'
 
 export const list = forge
   .query({
@@ -14,61 +18,50 @@ export const list = forge
     output: {
       OK: z.object({
         total: z.number(),
-        entries: z.array(movieSchemas.entries)
+        entries: z.array(entriesDto)
       })
     }
   })
-  .callback(async ({ pb, query: { watched }, response }) => {
-    const parsedWatched = watched === 'true' ? true : false
-
-    const entries = await pb.getFullList
-      .collection('entries')
-      .filter(
+  .callback(async ({ db, query: { watched }, response }) => {
+    const rows = await db
+      .select()
+      .from(moviesEntries)
+      .where(
         watched !== undefined
-          ? [
-              {
-                field: 'is_watched',
-                operator: '=',
-                value: parsedWatched
-              }
-            ]
-          : []
+          ? eq(moviesEntries.is_watched, watched === 'true')
+          : undefined
       )
-      .execute()
 
-    const total = (
-      await pb.getList.collection('entries').page(1).perPage(1).execute()
-    ).totalItems
+    const [totalRow] = await db
+      .select({ value: sqlCount() })
+      .from(moviesEntries)
+
+    const sorted = [...rows].sort((a, b) => {
+      if (a.is_watched !== b.is_watched) {
+        return a.is_watched ? 1 : -1
+      }
+
+      if (a.is_watched && b.is_watched && a.watch_date && b.watch_date) {
+        return b.watch_date.getTime() - a.watch_date.getTime()
+      }
+
+      if (
+        (a.ticket_number && !b.ticket_number) ||
+        (!a.ticket_number && b.ticket_number)
+      ) {
+        return a.ticket_number ? -1 : 1
+      }
+
+      if (a.theatre_showtime && b.theatre_showtime) {
+        return a.theatre_showtime.getTime() - b.theatre_showtime.getTime()
+      }
+
+      return a.title.localeCompare(b.title)
+    })
 
     return response.ok({
-      total,
-      entries: entries.sort((a, b) => {
-        if (a.is_watched !== b.is_watched) {
-          return a.is_watched ? 1 : -1
-        }
-
-        if (a.is_watched && b.is_watched && a.watch_date && b.watch_date) {
-          return (
-            new Date(b.watch_date).getTime() - new Date(a.watch_date).getTime()
-          )
-        }
-
-        if (
-          (a.ticket_number && !b.ticket_number) ||
-          (!a.ticket_number && b.ticket_number)
-        ) {
-          return a.ticket_number ? -1 : 1
-        }
-
-        if (a.theatre_showtime && b.theatre_showtime) {
-          return (
-            new Date(a.theatre_showtime).getTime() -
-            new Date(b.theatre_showtime).getTime()
-          )
-        }
-
-        return a.title.localeCompare(b.title)
-      })
+      total: totalRow.value,
+      entries: sorted
     })
   })
 
@@ -86,13 +79,12 @@ export const create = forge
         .optional()
     },
     output: {
-      CREATED: movieSchemas.entries,
-      BAD_REQUEST: z.string()
+      CREATED: entriesDto
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       query: { id },
       body,
       core: {
@@ -102,33 +94,25 @@ export const create = forge
     }) => {
       const parsedId = parseInt(id, 10)
 
-      const apiKey = await getAPIKey('tmdb', pb)
+      const apiKey = await getAPIKey('tmdb')
 
       if (!apiKey) {
         return response.badRequest('API key not found')
       }
 
-      const initialData = await pb.getFirstListItem
-        .collection('entries')
-        .filter([
-          {
-            field: 'tmdb_id',
-            operator: '=',
-            value: parsedId
-          }
-        ])
-        .execute()
-        .catch(() => null)
+      const initialData = await db.query.entries.findFirst({
+        where: { tmdb_id: parsedId }
+      })
 
       if (initialData) {
         if (body?.tgvId) {
-          return response.created(
-            await pb.update
-              .collection('entries')
-              .id(initialData.id)
-              .data({ tgv_id: body.tgvId })
-              .execute()
-          )
+          const [updated] = await db
+            .update(moviesEntries)
+            .set({ tgv_id: body.tgvId })
+            .where(eq(moviesEntries.id, initialData.id))
+            .returning()
+
+          return response.created(updated)
         }
 
         return response.badRequest('Entry already exists')
@@ -149,22 +133,23 @@ export const create = forge
 
       const tmdbData = await tmdbRes.json()
 
-      const entryData = {
-        tmdb_id: tmdbData.id,
-        tgv_id: body?.tgvId ?? '',
-        title: tmdbData.title,
-        original_title: tmdbData.original_title,
-        poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
-        genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
-        duration: tmdbData.runtime,
-        overview: tmdbData.overview,
-        release_date: tmdbData.release_date,
-        language: tmdbData.original_language
-      }
+      const [created] = await db
+        .insert(moviesEntries)
+        .values({
+          tmdb_id: tmdbData.id,
+          tgv_id: body?.tgvId ?? '',
+          title: tmdbData.title,
+          original_title: tmdbData.original_title,
+          poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
+          genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
+          duration: tmdbData.runtime,
+          overview: tmdbData.overview,
+          release_date: tmdbData.release_date,
+          language: tmdbData.original_language
+        })
+        .returning()
 
-      return response.created(
-        await pb.create.collection('entries').data(entryData).execute()
-      )
+      return response.created(created)
     }
   )
 
@@ -173,34 +158,31 @@ export const update = forge
     description: 'Update movie entry with the latest data from TMDB',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), moviesEntries)
       })
     },
-    existenceCheck: {
-      query: { id: 'entries' }
-    },
     output: {
-      OK: movieSchemas.entries,
-      BAD_REQUEST: z.string(),
-      NOT_FOUND: true
+      OK: entriesDto
     }
   })
   .callback(
     async ({
-      pb,
+      db,
       query: { id },
       core: {
         api: { getAPIKey }
       },
       response
     }) => {
-      const apiKey = await getAPIKey('tmdb', pb)
+      const apiKey = await getAPIKey('tmdb')
 
       if (!apiKey) {
         return response.badRequest('API key not found')
       }
 
-      const movieEntry = await pb.getOne.collection('entries').id(id).execute()
+      const movieEntry = (await db.query.entries.findFirst({
+        where: { id }
+      }))!
 
       if (movieEntry.tmdb_id === -1) {
         return response.badRequest('No TMDB ID')
@@ -221,21 +203,23 @@ export const update = forge
 
       const tmdbData = await tmdbRes.json()
 
-      const entryData = {
-        tmdb_id: tmdbData.id,
-        title: tmdbData.title,
-        original_title: tmdbData.original_title,
-        poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
-        genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
-        duration: tmdbData.runtime,
-        overview: tmdbData.overview,
-        release_date: tmdbData.release_date,
-        language: tmdbData.original_language
-      }
+      const [updated] = await db
+        .update(moviesEntries)
+        .set({
+          tmdb_id: tmdbData.id,
+          title: tmdbData.title,
+          original_title: tmdbData.original_title,
+          poster: `https://image.tmdb.org/t/p/original${tmdbData.poster_path}`,
+          genres: tmdbData.genres.map((genre: { name: string }) => genre.name),
+          duration: tmdbData.runtime,
+          overview: tmdbData.overview,
+          release_date: tmdbData.release_date,
+          language: tmdbData.original_language
+        })
+        .where(eq(moviesEntries.id, id))
+        .returning()
 
-      return response.ok(
-        await pb.update.collection('entries').id(id).data(entryData).execute()
-      )
+      return response.ok(updated)
     }
   )
 
@@ -244,19 +228,15 @@ export const remove = forge
     description: 'Delete a movie entry',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), moviesEntries)
       })
     },
-    existenceCheck: {
-      query: { id: 'entries' }
-    },
     output: {
-      NO_CONTENT: true,
-      NOT_FOUND: true
+      NO_CONTENT: true
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    await pb.delete.collection('entries').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    await db.delete(moviesEntries).where(eq(moviesEntries.id, id))
 
     return response.noContent()
   })
@@ -266,32 +246,28 @@ export const toggleWatchStatus = forge
     description: 'Toggle watch status of a movie entry',
     input: {
       query: z.object({
-        id: z.string()
+        id: forge.existsIn(z.string(), moviesEntries)
       })
     },
-    existenceCheck: {
-      query: { id: 'entries' }
-    },
     output: {
-      OK: movieSchemas.entries,
-      NOT_FOUND: true
+      OK: entriesDto
     }
   })
-  .callback(async ({ pb, query: { id }, response }) => {
-    const entry = await pb.getOne.collection('entries').id(id).execute()
+  .callback(async ({ db, query: { id }, response }) => {
+    const entry = (await db.query.entries.findFirst({ where: { id } }))!
 
-    return response.ok(
-      await pb.update
-        .collection('entries')
-        .id(id)
-        .data({
-          is_watched: !entry.is_watched,
-          watch_date: !entry.is_watched
-            ? entry.theatre_showtime || new Date().toISOString()
-            : null
-        })
-        .execute()
-    )
+    const [updated] = await db
+      .update(moviesEntries)
+      .set({
+        is_watched: !entry.is_watched,
+        watch_date: !entry.is_watched
+          ? (entry.theatre_showtime ?? new Date())
+          : null
+      })
+      .where(eq(moviesEntries.id, id))
+      .returning()
+
+    return response.ok(updated)
   })
 
 export const count = forge
@@ -304,24 +280,19 @@ export const count = forge
       })
     }
   })
-  .callback(async ({ pb, response }) => {
-    const [watched, unwatched] = await Promise.all([
-      pb.getList
-        .collection('entries')
-        .page(1)
-        .perPage(1)
-        .filter([{ field: 'is_watched', operator: '=', value: true }])
-        .execute(),
-      pb.getList
-        .collection('entries')
-        .page(1)
-        .perPage(1)
-        .filter([{ field: 'is_watched', operator: '=', value: false }])
-        .execute()
-    ])
+  .callback(async ({ db, response }) => {
+    const [watched] = await db
+      .select({ value: sqlCount() })
+      .from(moviesEntries)
+      .where(eq(moviesEntries.is_watched, true))
+
+    const [unwatched] = await db
+      .select({ value: sqlCount() })
+      .from(moviesEntries)
+      .where(eq(moviesEntries.is_watched, false))
 
     return response.ok({
-      watched: watched.totalItems,
-      unwatched: unwatched.totalItems
+      watched: watched.value,
+      unwatched: unwatched.value
     })
   })
