@@ -1,8 +1,7 @@
 import { eq, count as sqlCount } from 'drizzle-orm'
-import { createSelectSchema } from 'drizzle-orm/zod'
 import z from 'zod'
 
-import { entriesDto } from '@/types/entries.type'
+import { entriesDto } from '../types/entries.type'
 
 import forge from '../forge'
 import { moviesEntries } from '../schema.drizzle'

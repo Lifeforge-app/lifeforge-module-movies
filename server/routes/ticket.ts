@@ -3,7 +3,7 @@ import z from 'zod'
 
 import { LocationSchema } from '@lifeforge/server-utils'
 
-import { entriesDto } from '@/types/entries.type'
+import { entriesDto } from '../types/entries.type'
 
 import forge from '../forge'
 import { moviesEntries } from '../schema.drizzle'
