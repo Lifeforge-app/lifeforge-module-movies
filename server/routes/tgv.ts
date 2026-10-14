@@ -3,9 +3,8 @@ import z from 'zod'
 
 import { LocationSchema } from '@lifeforge/server-utils'
 
-import { entriesDto } from '../types/entries.type'
-
 import forge from '../forge'
+import { entriesDto } from '../types/entries.type'
 import type { TGVBooking } from '../types/tgvBooking.type'
 import type { TGVCinema } from '../types/tgvCinema.type'
 import type { TGVExperienceAssets } from '../types/tgvExperienceAssets.type'
@@ -16,7 +15,7 @@ import type { TGVSeatStatus } from '../types/tgvSeatStatus.type'
 import type { TGVStates } from '../types/tgvStateData.type'
 
 const stripHtml = (html: string) =>
-  new JSDOM(html).window.document.body.textContent?.trim() ?? ''
+  new JSDOM(html).window.document.body.textContent?.trim()
 
 let cachedSession: string | null = null
 
@@ -87,11 +86,11 @@ export const list = forge
           recid: movie.recid,
           name: movie.name,
           poster: posterAsset?.extdata?.fileinfo?.fileurl ?? '',
-          genres: movie.extdata?.movieinfo?.genre ?? [],
+          genres: movie.extdata?.movieinfo?.genre,
           duration: Number(movie.extdata?.movieinfo?.runtimemins) || 0,
-          overview: stripHtml(movie.extdata?.movieinfo?.synopsis ?? ''),
-          language: movie.extdata?.movieinfo?.lang ?? '',
-          release_date: movie.extdata?.movieinfo?.releasedatemy ?? ''
+          overview: stripHtml(movie.extdata?.movieinfo?.synopsis),
+          language: movie.extdata?.movieinfo?.lang,
+          release_date: movie.extdata?.movieinfo?.releasedatemy
         }
       })
     })
@@ -224,8 +223,8 @@ export const fetchTicket = forge
 
         if (locSearchResults.length) {
           const target = locSearchResults[0]
-          location = target.name
-          locationCoords = target.location
+          location = target?.name ?? location
+          locationCoords = target?.location ?? null
         }
       }
 
@@ -327,7 +326,7 @@ export const getMovieCinemas = forge
 
     const screeningIds = new Set(
       movieData.results.locations.flatMap(loc =>
-        loc.cinemaids.map(c => c.cinemaid as string)
+        loc.cinemaids.map(c => c.cinemaid)
       )
     )
 

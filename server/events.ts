@@ -45,7 +45,7 @@ export default async function getEvents({
           .toISOString(),
         category: '_movie',
         calendar: '',
-        location: entry.theatre_location ?? '',
+        location: entry.theatre_location,
         location_coords: entry.theatre_location_coords ?? { lat: 0, lon: 0 },
         description: `
   ![${entry.title}](${entry.poster})

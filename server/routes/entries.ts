@@ -59,7 +59,7 @@ export const list = forge
     })
 
     return response.ok({
-      total: totalRow.value,
+      total: totalRow?.value ?? 0,
       entries: sorted
     })
   })
@@ -111,6 +111,10 @@ export const create = forge
             .where(eq(moviesEntries.id, initialData.id))
             .returning()
 
+          if (!updated) {
+            return response.notFound()
+          }
+
           return response.created(updated)
         }
 
@@ -147,6 +151,10 @@ export const create = forge
           language: tmdbData.original_language
         })
         .returning()
+
+      if (!created) {
+        return response.badRequest('Failed to create movie entry')
+      }
 
       return response.created(created)
     }
@@ -218,6 +226,10 @@ export const update = forge
         .where(eq(moviesEntries.id, id))
         .returning()
 
+      if (!updated) {
+        return response.notFound()
+      }
+
       return response.ok(updated)
     }
   )
@@ -266,6 +278,10 @@ export const toggleWatchStatus = forge
       .where(eq(moviesEntries.id, id))
       .returning()
 
+    if (!updated) {
+      return response.notFound()
+    }
+
     return response.ok(updated)
   })
 
@@ -291,7 +307,7 @@ export const count = forge
       .where(eq(moviesEntries.is_watched, false))
 
     return response.ok({
-      watched: watched.value,
-      unwatched: unwatched.value
+      watched: watched?.value ?? 0,
+      unwatched: unwatched?.value ?? 0
     })
   })

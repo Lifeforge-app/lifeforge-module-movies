@@ -51,6 +51,10 @@ export const update = forge
       .where(eq(moviesEntries.id, id))
       .returning()
 
+    if (!updated) {
+      return response.notFound()
+    }
+
     return response.ok(updated)
   })
 
