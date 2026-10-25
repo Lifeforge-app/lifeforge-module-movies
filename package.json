@@ -34,7 +34,7 @@
     "APIKeyAccess": {
       "tmdb": {
         "usage": "To fetch movie data from The Movie Database (TMDB) API",
-        "required": false
+        "required": true
       }
     }
   },

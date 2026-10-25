@@ -11,6 +11,7 @@ import {
   SearchInput,
   Text,
   WithQuery,
+  surface,
   toast
 } from '@lifeforge/ui'
 
@@ -94,6 +95,7 @@ function SearchTMDBModal({
       />
       <Flex align="center" direction={{ base: 'column', sm: 'row' }} gap="xs">
         <SearchInput
+          bg={surface.lightInteractive}
           searchTarget="movie"
           value={searchQuery}
           onChange={setSearchQuery}
