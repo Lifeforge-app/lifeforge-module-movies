@@ -10,6 +10,7 @@ import {
   DateInput,
   Flex,
   Icon,
+  Image,
   ListboxInput,
   ListboxOption,
   ModalHeader,
@@ -123,19 +124,17 @@ function ScreeningDetailsModal({
       />
       <Stack mt="lg">
         <Card bg={surface.light} direction="row" gap="md">
-          <Box
+          <Image
+            alt=""
+            fallback="tabler:movie"
+            fit="cover"
             flexShrink="0"
             height="5rem"
             overflow="hidden"
             r="md"
+            src={movie.poster}
             width="3.5rem"
-          >
-            <img
-              alt=""
-              src={movie.poster}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          </Box>
+          />
           <Flex direction="column" justify="center">
             <Text size="lg" weight="semibold">
               {movie.name}
@@ -257,10 +256,11 @@ function ScreeningDetailsModal({
                     return (
                       <Flex align="center" gap="sm">
                         {logo?.logoUrl && (
-                          <img
+                          <Image
                             alt=""
+                            fallback={null}
+                            height="1em"
                             src={logo.logoUrl}
-                            style={{ height: '1em' }}
                           />
                         )}
                         <Text truncate as="p">
@@ -280,14 +280,13 @@ function ScreeningDetailsModal({
                       key={exp}
                       icon={
                         logoMap.get(exp)?.logoUrl ? (
-                          <img
+                          <Image
                             alt=""
+                            fallback={null}
+                            flexShrink="0"
+                            mr="xs"
                             src={logoMap.get(exp)!.logoUrl}
-                            style={{
-                              flexShrink: 0,
-                              width: '3em',
-                              marginRight: '0.25em'
-                            }}
+                            width="3em"
                           />
                         ) : undefined
                       }

@@ -9,6 +9,7 @@ import {
   Card,
   Flex,
   Icon,
+  Image,
   Text,
   colorWithOpacity,
   surface,
@@ -65,40 +66,18 @@ function TGVMovieItem({
 
   return (
     <Card bg={surface.light} direction="column" gap="md" minWidth="0">
-      <Flex
-        centered
-        bg={{ base: 'bg-200', dark: colorWithOpacity('bg-700', '40%') }}
-        overflow="hidden"
-        position="relative"
-        r="md"
+      <Image
+        alt=""
         aspectRatio="27/40"
+        bg={{ base: 'bg-200', dark: colorWithOpacity('bg-700', '40%') }}
+        fallback="tabler:movie"
+        fit="contain"
+        overflow="hidden"
+        r="md"
+        src={data.poster}
         style={{ isolation: 'isolate' }}
-      >
-        <Box
-          asChild
-          left="50%"
-          position="absolute"
-          style={{ transform: 'translate(-50%, -50%)' }}
-          top="50%"
-          zIndex="-1"
-        >
-          <Icon
-            color={{ base: 'bg-300', dark: 'bg-700' }}
-            icon="tabler:movie"
-            size="4.5em"
-          />
-        </Box>
-        <Box
-          asChild
-          bg={surface.light}
-          height="100%"
-          width="100%"
-          r="md"
-          style={{ objectFit: 'contain' }}
-        >
-          <img alt="" src={data.poster} />
-        </Box>
-      </Flex>
+        width="100%"
+      />
       <Flex direction="column" flex="1" minWidth="0">
         <Text color="custom-500" mb="xs" weight="semibold">
           {data.release_date ? dayjs(data.release_date).year() : 'TBA'}

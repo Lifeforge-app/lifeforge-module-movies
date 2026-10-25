@@ -7,6 +7,7 @@ import {
   Flex,
   Grid,
   Icon,
+  Image,
   ModalHeader,
   Stack,
   Text,
@@ -55,10 +56,13 @@ function ShowTicketModal({
       {entry && (
         <>
           <Box height="14rem" overflow="hidden" position="relative" r="md">
-            <img
+            <Image
               alt=""
+              fallback="tabler:movie"
+              fit="cover"
+              height="100%"
               src={entry.poster}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              width="100%"
             />
             <Box
               inset="0"
