@@ -65,7 +65,7 @@ function MovieTab({
   }, [count, setAmounts])
 
   return (
-    <Stack direction="column" flex="1" gap="sm">
+    <Stack direction="column" gap="sm" minHeight="0">
       <MovieTabbedView.Selector />
       {data.entries.length === 0 ? (
         <EmptyStateScreen

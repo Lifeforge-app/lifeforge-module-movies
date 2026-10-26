@@ -57,7 +57,6 @@ function TGVMovieList() {
                   >
                     <Grid
                       gap="sm"
-                      pb="md"
                       templateCols={{
                         base: 1,
                         sm: 'repeat(auto-fill, minmax(20rem, 1fr))'
