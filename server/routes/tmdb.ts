@@ -89,7 +89,7 @@ export const search = forge
       })
 
       return response.ok(
-        tmdbData as unknown as z.infer<typeof TMDBResponseSchema>
+        tmdbData
       )
     }
   )
